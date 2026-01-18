@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>poly.edu</groupId>
-    <artifactId>ASMTEST</artifactId>
+    <artifactId>ASM_Java5</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>ASMTEST</name>
     <description>ASMTEST</description>

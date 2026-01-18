@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giỏ Hàng - FruitGarden</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary: #2ecc71; --primary-dark: #27ae60; --accent: #e74c3c; --dark-green: #145a32; --text-main: #2c3e50; --fab-color: #6f42c1; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f8f9fa; }
+        .navbar { background: rgba(255, 255, 255, 0.98); box-shadow: 0 4px 20px rgba(0,0,0,0.05); padding: 15px 0; }
+        .nav-link { font-weight: 600; color: var(--text-main) !important; margin: 0 12px; position: relative; }
+        .nav-link:hover { color: var(--primary) !important; }
+        .nav-link::after { content: ''; position: absolute; width: 0; height: 3px; bottom: -5px; left: 0; background: var(--primary); transition: width 0.3s; }
+        .nav-link:hover::after { width: 100%; }
+
+        /* Floating & Footer */
+        .floating-group { position: fixed; bottom: 30px; right: 30px; z-index: 9999; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        .btn-float { width: 50px; height: 50px; border-radius: 50%; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; color: white; transition: 0.3s; }
+        .btn-up { background-color: #6c757d; opacity: 0; visibility: hidden; transform: translateY(20px); }
+        .btn-up.show { opacity: 1; visibility: visible; transform: translateY(0); }
+        .btn-contact-main { background: var(--fab-color); font-size: 1.4rem; position: relative; }
+        .btn-ripple { position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 1px solid var(--fab-color); animation: ripple 1.5s infinite; z-index: -1; }
+        @keyframes ripple { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.6); opacity: 0; } }
+        .contact-popup { position: absolute; bottom: 70px; right: 0; width: 200px; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+        .contact-item { display: flex; align-items: center; background: white; padding: 8px 15px; border-radius: 50px; text-decoration: none; color: #333; font-weight: 600; box-shadow: 0 5px 15px rgba(0,0,0,0.1); opacity: 0; transform: translateX(50px) scale(0.5); transition: 0.3s; }
+        .icon-box { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; color: white; margin-right: 10px; }
+        .zalo .icon-box { background: #0068ff; } .phone .icon-box { background: #2ecc71; }
+        .contact-popup.active { pointer-events: auto; }
+        .contact-popup.active .contact-item { opacity: 1; transform: translateX(0) scale(1); }
+        .btn-contact-main.active { background: #dc3545; } .btn-contact-main.active .icon-close { display: block; } .btn-contact-main.active .icon-main { display: none; } .icon-close { display: none; }
+        .contact-item:hover { transform: translateX(-5px) !important; }
+
+        footer { background-color: var(--dark-green); color: #e8f5e9; position: relative; margin-top: 50px; }
+        .footer-wave svg { display: block; width: calc(130% + 1.3px); height: 50px; } .footer-wave .shape-fill { fill: var(--dark-green); }
+        .footer-link { color: #a5d6a7; text-decoration: none; display: block; margin-bottom: 8px; transition: 0.3s; }
+        .footer-link:hover { color: white; transform: translateX(5px); }
+
+        /* Cart Specific */
+        .cart-table { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .cart-table thead { background: var(--primary); color: white; }
+        .cart-table th { padding: 15px; font-weight: 600; border: none; }
+        .cart-table td { padding: 15px; vertical-align: middle; border-bottom: 1px solid #eee; }
+        .cart-img { width: 80px; height: 80px; object-fit: cover; border-radius: 10px; }
+        .quantity-control { display: flex; align-items: center; border: 1px solid #dee2e6; border-radius: 8px; width: fit-content; }
+        .btn-qty { border: none; background: #fff; padding: 5px 10px; } .btn-qty:hover { background: #f0f0f0; }
+        .input-qty { border: none; text-align: center; width: 40px; font-weight: 600; outline: none; }
+        .summary-card { background: white; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); padding: 25px; border: 1px solid #eee; position: sticky; top: 100px; }
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 15px; }
+        .summary-total { display: flex; justify-content: space-between; margin-top: 20px; padding-top: 20px; border-top: 2px dashed #eee; font-size: 1.2rem; font-weight: 800; color: var(--accent); }
+        .pointer {cursor: pointer;transition: 0.2s;}
+        .pointer:hover {opacity: 0.7;transform: scale(1.1);}
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg sticky-top">
+    <div class="container">
+        <a class="navbar-brand fw-bold text-success fs-3" href="../../../../../../../../../Users/LE%20QUOC%20TOAN/Downloads/index.html"><i class="fas fa-leaf me-2"></i>FruitGarden</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="../../../../../../../../../Users/LE%20QUOC%20TOAN/Downloads/index.html">TRANG CHỦ</a></li>
+                <li class="nav-item"><a class="nav-link" href="../../../../../../../../../Users/LE%20QUOC%20TOAN/Downloads/product-detail.html">SẢN PHẨM</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">LIÊN HỆ</a></li>
+            </ul>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <i class="fas fa-search fs-5 text-secondary pointer"></i>
+            <div class="position-relative">
+                <a href="cart.html" class="text-success"><i class="fas fa-shopping-bag fs-5"></i><span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">2</span></a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="container py-3">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb m-0"><li class="breadcrumb-item"><a href="../../../../../../../../../Users/LE%20QUOC%20TOAN/Downloads/index.html" class="text-decoration-none text-success">Trang chủ</a></li><li class="breadcrumb-item active">Giỏ hàng của bạn</li></ol>
+    </nav>
+</div>
+
+<section class="container mb-5">
+    <h3 class="fw-bold mb-4">Giỏ Hàng</h3>
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="table-responsive cart-table mb-4">
+                <table class="table mb-0">
+                    <thead><tr><th>Sản Phẩm</th><th>Giá</th><th>Số Lượng</th><th>Tạm Tính</th><th></th></tr></thead>
+                    <tbody>
+                    <tr class="cart-item" data-price="250000">
+                        <td><div class="d-flex align-items-center gap-3"><img src="https://images.unsplash.com/photo-1595475207225-428b62bda831?w=200" class="cart-img"><div><h6 class="fw-bold mb-1">Dâu Tây Nhật</h6></div></div></td>
+                        <td class="fw-bold text-secondary">250.000₫</td>
+                        <td><div class="quantity-control"><button class="btn-qty" onclick="updateCartQty(this, -1)">-</button><input type="text" value="2" class="input-qty" readonly><button class="btn-qty" onclick="updateCartQty(this, 1)">+</button></div></td>
+                        <td class="fw-bold text-success item-total">500.000₫</td>
+                        <td><i class="fas fa-trash-alt text-danger pointer" onclick="removeItem(this)"></i></td>
+                    </tr>
+                    <tr class="cart-item" data-price="180000">
+                        <td><div class="d-flex align-items-center gap-3"><img src="https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=200" class="cart-img"><div><h6 class="fw-bold mb-1">Táo Envy Mỹ</h6></div></div></td>
+                        <td class="fw-bold text-secondary">180.000₫</td>
+                        <td><div class="quantity-control"><button class="btn-qty" onclick="updateCartQty(this, -1)">-</button><input type="text" value="1" class="input-qty" readonly><button class="btn-qty" onclick="updateCartQty(this, 1)">+</button></div></td>
+                        <td class="fw-bold text-success item-total">180.000₫</td>
+                        <td><i class="fas fa-trash-alt text-danger pointer" onclick="removeItem(this)"></i></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <a href="../../../../../../../../../Users/LE%20QUOC%20TOAN/Downloads/index.html" class="text-decoration-none text-success fw-bold"><i class="fas fa-long-arrow-alt-left me-2"></i> Tiếp tục mua sắm</a>
+        </div>
+        <div class="col-lg-4">
+            <div class="summary-card">
+                <h5 class="fw-bold mb-4">Cộng Giỏ Hàng</h5>
+                <div class="summary-row"><span>Tạm tính</span><span id="subTotalDisplay">680.000₫</span></div>
+                <div class="summary-row"><span>VAT (8%)</span><span id="vatDisplay">54.400₫</span></div>
+                <div class="summary-total"><span>Tổng cộng</span><span id="grandTotalDisplay">734.400₫</span></div>
+                <button class="btn btn-success w-100 py-3 mt-4 fw-bold rounded-pill">THANH TOÁN</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="floating-group">
+    <button id="backToTopBtn" class="btn-float btn-up"><i class="fas fa-chevron-up"></i></button>
+    <div class="contact-wrapper">
+        <div class="contact-popup" id="contactPopup">
+            <a href="#" class="contact-item zalo"><div class="icon-box"><i class="fas fa-comment-dots"></i></div><span>Chat Zalo</span></a>
+            <a href="#" class="contact-item phone"><div class="icon-box"><i class="fas fa-phone-alt"></i></div><span>Gọi ngay</span></a>
+        </div>
+        <button id="contactToggleBtn" class="btn-float btn-contact-main"><i class="fas fa-headset icon-main"></i><i class="fas fa-times icon-close"></i><span class="btn-ripple"></span></button>
+    </div>
+</div>
+
+<footer>
+    <div class="footer-wave"><svg viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path></svg></div>
+    <div class="container pb-5 pt-3">
+        <div class="row"><div class="col-lg-4 mb-4"><h3 class="fw-bold text-white mb-3">FruitGarden<span class="text-success">.</span></h3></div></div>
+        <hr class="border-secondary mt-4"><div class="text-center text-white-50 small">&copy; 2024 FruitGarden.</div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function formatMoney(n){return n.toLocaleString('vi-VN')+'₫'}
+    function updateCartTotals(){let sub=0;document.querySelectorAll('.cart-item').forEach(r=>{let p=parseInt(r.getAttribute('data-price')),q=parseInt(r.querySelector('.input-qty').value),t=p*q;r.querySelector('.item-total').innerText=formatMoney(t);sub+=t});let vat=sub*0.08,tot=sub+vat;document.getElementById('subTotalDisplay').innerText=formatMoney(sub);document.getElementById('vatDisplay').innerText=formatMoney(vat);document.getElementById('grandTotalDisplay').innerText=formatMoney(tot)}
+    function updateCartQty(b,c){let i=b.parentElement.querySelector('.input-qty'),v=parseInt(i.value)+c;if(v>=1){i.value=v;updateCartTotals()}}
+    function removeItem(b){if(confirm('Xóa sản phẩm này?')){b.closest('tr').remove();updateCartTotals()}}
+    updateCartTotals();
+    const backToTopBtn=document.getElementById("backToTopBtn"),contactToggleBtn=document.getElementById("contactToggleBtn"),contactPopup=document.getElementById("contactPopup");
+    window.onscroll=function(){document.body.scrollTop>300||document.documentElement.scrollTop>300?backToTopBtn.classList.add("show"):backToTopBtn.classList.remove("show")};
+    backToTopBtn.addEventListener("click",function(){window.scrollTo({top:0,behavior:'smooth'})});
+    contactToggleBtn.addEventListener("click",function(e){e.stopPropagation();contactToggleBtn.classList.toggle("active");contactPopup.classList.toggle("active")});
+    document.addEventListener("click",function(e){if(!contactToggleBtn.contains(e.target)&&!contactPopup.contains(e.target)){contactToggleBtn.classList.remove("active");contactPopup.classList.remove("active")}});
+</script>
+</body>
+</html>
