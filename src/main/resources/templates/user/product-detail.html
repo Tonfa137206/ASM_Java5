@@ -192,6 +192,20 @@
         document.getElementById('actionInput').value = action;
         document.getElementById('addToCartForm').submit();
     }
+    function updateQty(c) {
+        var i = document.getElementById('qtyInput');
+        var v = parseInt(i.value) + c;
+        if (v >= 1) {
+            i.value = v;  // Đã có
+            // THÊM DÒNG NÀY: sync giá trị mới vào input name="quantity" (để form submit đúng)
+            document.querySelector('input[name="quantity"]').value = v;
+        }
+    }
+
+    function addToCart(action) {
+        document.getElementById('actionInput').value = action;
+        document.getElementById('addToCartForm').submit();
+    }
 </script>
 </body>
 </html>

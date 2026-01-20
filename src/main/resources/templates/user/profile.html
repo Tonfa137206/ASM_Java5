@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông tin cá nhân - FruitGarden</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<!-- Navbar giống các trang khác -->
+<nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container">
+        <a class="navbar-brand fw-bold text-success fs-3" href="/"><i class="fas fa-leaf me-2"></i>FruitGarden</a>
+        <!-- ... phần còn lại navbar giống index.html ... -->
+        <div class="d-flex align-items-center">
+            <!-- Giữ phần navbar như trên (đã có profile + logout) -->
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-5 pt-5">
+    <h2 class="text-center mb-4">Thông tin cá nhân</h2>
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <img th:src="${account.photo}" alt="Ảnh đại diện" class="rounded-circle mb-3" style="width: 150px; height: 150px;">
+                    <h4 th:text="${account.fullname}">Họ tên</h4>
+                    <p class="text-muted">Tên đăng nhập: <strong th:text="${account.username}"></strong></p>
+                    <p>Email: <strong th:text="${account.email}"></strong></p>
+                    <p>Vai trò: <strong th:text="${account.role ? 'Admin' : 'Khách hàng'}"></strong></p>
+                    <p>Trạng thái: <strong th:text="${account.activated ? 'Hoạt động' : 'Bị khóa'}"></strong></p>
+
+                    <a href="/logout" class="btn btn-danger w-100 mt-4">Đăng xuất</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer giống các trang khác -->
+<footer class="bg-dark text-white py-5 mt-5">
+    <div class="container text-center">
+        <p>&copy; 2024 FruitGarden. Designed for IntelliJ Project.</p>
+        <p>Hotline: 1900 6789</p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
