@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -44,7 +44,7 @@
         .cart-table td { padding: 15px; vertical-align: middle; border-bottom: 1px solid #eee; }
         .cart-img { width: 80px; height: 80px; object-fit: cover; border-radius: 10px; }
         .quantity-control { display: flex; align-items: center; border: 1px solid #dee2e6; border-radius: 8px; width: fit-content; }
-        .btn-qty { border: none; background: #fff; padding: 5px 10px; } .btn-qty:hover { background: #f0f0f0; }
+        .btn-qty { border: none; background: #fff; padding: 5px 10px; cursor: pointer; } .btn-qty:hover { background: #f0f0f0; }
         .input-qty { border: none; text-align: center; width: 40px; font-weight: 600; outline: none; }
         .summary-card { background: white; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); padding: 25px; border: 1px solid #eee; position: sticky; top: 100px; }
         .summary-row { display: flex; justify-content: space-between; margin-bottom: 15px; }
@@ -54,70 +54,108 @@
     </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg sticky-top">
+<nav class="navbar navbar-expand-lg fixed-top">
     <div class="container">
-        <a class="navbar-brand fw-bold text-success fs-3" href="../../../../../../../../../Users/LE%20QUOC%20TOAN/Downloads/index.html"><i class="fas fa-leaf me-2"></i>FruitGarden</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
+        <a class="navbar-brand fw-bold text-success fs-3" href="/"><i class="fas fa-leaf me-2"></i>FruitGarden</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
         <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
             <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link" href="../../../../../../../../../Users/LE%20QUOC%20TOAN/Downloads/index.html">TRANG CHỦ</a></li>
-                <li class="nav-item"><a class="nav-link" href="../../../../../../../../../Users/LE%20QUOC%20TOAN/Downloads/product-detail.html">SẢN PHẨM</a></li>
+                <li class="nav-item"><a class="nav-link" href="/">TRANG CHỦ</a></li>
+                <li class="nav-item"><a class="nav-link" href="/products">SẢN PHẨM</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">BLOG SỨC KHỎE</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">LIÊN HỆ</a></li>
             </ul>
         </div>
-        <div class="d-flex align-items-center gap-3">
-            <i class="fas fa-search fs-5 text-secondary pointer"></i>
-            <div class="position-relative">
-                <a href="cart.html" class="text-success"><i class="fas fa-shopping-bag fs-5"></i><span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">2</span></a>
-            </div>
+        <div class="d-flex align-items-center">
+            <a href="/cart" class="position-relative me-3 text-dark">
+                <i class="fas fa-shopping-cart fs-5"></i>
+                <span th:text="${cartCount}" class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle">0</span>
+            </a>
+
+            <!-- Khi đã đăng nhập -->
+            <th:block th:if="${session.account != null}">
+                <a href="/profile" class="me-3 text-dark">
+                    <i class="fas fa-user fs-5"></i> <span th:text="${session.account.fullname}"></span>
+                </a>
+                <a href="/logout" class="text-danger">
+                    <i class="fas fa-sign-out-alt fs-5"></i> Đăng xuất
+                </a>
+            </th:block>
+
+            <!-- Khi chưa đăng nhập -->
+            <th:block th:unless="${session.account != null}">
+                <a href="/login" class="text-dark me-3">
+                    <i class="fas fa-sign-in-alt fs-5"></i> Đăng nhập
+                </a>
+                <a href="/register" class="text-success">
+                    <i class="fas fa-user-plus fs-5"></i> Đăng ký
+                </a>
+            </th:block>
         </div>
     </div>
 </nav>
 
-<div class="container py-3">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb m-0"><li class="breadcrumb-item"><a href="../../../../../../../../../Users/LE%20QUOC%20TOAN/Downloads/index.html" class="text-decoration-none text-success">Trang chủ</a></li><li class="breadcrumb-item active">Giỏ hàng của bạn</li></ol>
-    </nav>
-</div>
+<!-- Nội dung giỏ hàng -->
+<div class="container mt-5 pt-5">
+    <h2 class="text-center mb-4">Giỏ Hàng Của Bạn</h2>
 
-<section class="container mb-5">
-    <h3 class="fw-bold mb-4">Giỏ Hàng</h3>
-    <div class="row">
-        <div class="col-lg-8">
-            <div class="table-responsive cart-table mb-4">
-                <table class="table mb-0">
-                    <thead><tr><th>Sản Phẩm</th><th>Giá</th><th>Số Lượng</th><th>Tạm Tính</th><th></th></tr></thead>
-                    <tbody>
-                    <tr class="cart-item" data-price="250000">
-                        <td><div class="d-flex align-items-center gap-3"><img src="https://images.unsplash.com/photo-1595475207225-428b62bda831?w=200" class="cart-img"><div><h6 class="fw-bold mb-1">Dâu Tây Nhật</h6></div></div></td>
-                        <td class="fw-bold text-secondary">250.000₫</td>
-                        <td><div class="quantity-control"><button class="btn-qty" onclick="updateCartQty(this, -1)">-</button><input type="text" value="2" class="input-qty" readonly><button class="btn-qty" onclick="updateCartQty(this, 1)">+</button></div></td>
-                        <td class="fw-bold text-success item-total">500.000₫</td>
-                        <td><i class="fas fa-trash-alt text-danger pointer" onclick="removeItem(this)"></i></td>
-                    </tr>
-                    <tr class="cart-item" data-price="180000">
-                        <td><div class="d-flex align-items-center gap-3"><img src="https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=200" class="cart-img"><div><h6 class="fw-bold mb-1">Táo Envy Mỹ</h6></div></div></td>
-                        <td class="fw-bold text-secondary">180.000₫</td>
-                        <td><div class="quantity-control"><button class="btn-qty" onclick="updateCartQty(this, -1)">-</button><input type="text" value="1" class="input-qty" readonly><button class="btn-qty" onclick="updateCartQty(this, 1)">+</button></div></td>
-                        <td class="fw-bold text-success item-total">180.000₫</td>
-                        <td><i class="fas fa-trash-alt text-danger pointer" onclick="removeItem(this)"></i></td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-            <a href="../../../../../../../../../Users/LE%20QUOC%20TOAN/Downloads/index.html" class="text-decoration-none text-success fw-bold"><i class="fas fa-long-arrow-alt-left me-2"></i> Tiếp tục mua sắm</a>
-        </div>
-        <div class="col-lg-4">
-            <div class="summary-card">
-                <h5 class="fw-bold mb-4">Cộng Giỏ Hàng</h5>
-                <div class="summary-row"><span>Tạm tính</span><span id="subTotalDisplay">680.000₫</span></div>
-                <div class="summary-row"><span>VAT (8%)</span><span id="vatDisplay">54.400₫</span></div>
-                <div class="summary-total"><span>Tổng cộng</span><span id="grandTotalDisplay">734.400₫</span></div>
-                <button class="btn btn-success w-100 py-3 mt-4 fw-bold rounded-pill">THANH TOÁN</button>
-            </div>
+    <div th:if="${#lists.isEmpty(cartItems)}" class="alert alert-info text-center">
+        Giỏ hàng của bạn đang trống! Hãy thêm sản phẩm từ trang chủ.
+    </div>
+
+    <div th:unless="${#lists.isEmpty(cartItems)}">
+        <table class="table table-hover">
+            <thead class="table-dark">
+            <tr>
+                <th>Sản Phẩm</th>
+                <th>Giá</th>
+                <th>Số Lượng</th>
+                <th>Tổng</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${cartItems}">
+                <td>
+                    <img th:src="${item.product.image}" th:alt="${item.product.name}" class="cart-img me-3">
+                    <span th:text="${item.product.name}"></span>
+                </td>
+                <td th:text="${item.product.price} + ' ₫'"></td>
+                <td>
+                    <div class="input-group" style="width: 150px;">
+                        <button class="btn btn-outline-secondary" type="button"
+                                th:onclick="'updateQuantity(' + ${item.id} + ', -1)'">-</button>
+                        <input type="number" th:value="${item.quantity}" class="form-control text-center" readonly>
+                        <button class="btn btn-outline-secondary" type="button"
+                                th:onclick="'updateQuantity(' + ${item.id} + ', 1)'">+</button>
+                    </div>
+                </td>
+                <td th:id="'total-' + ${item.id}" th:text="${item.product.price * item.quantity} + ' ₫'"></td>
+                <td>
+                    <a th:href="@{/cart/remove/{id}(id=${item.id})}" class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+            <tfoot>
+            <tr>
+                <td colspan="3" class="text-end fw-bold">Tổng cộng:</td>
+                <td id="grandTotal" class="fw-bold text-success" th:text="${total} + ' ₫'"></td>
+                <td></td>
+            </tr>
+            </tfoot>
+        </table>
+
+        <div class="text-end mt-4">
+            <button onclick="checkout()" class="btn btn-success btn-lg px-5">
+                <i class="fas fa-credit-card me-2"></i> Mua hàng
+            </button>
         </div>
     </div>
-</section>
+</div>
 
 <div class="floating-group">
     <button id="backToTopBtn" class="btn-float btn-up"><i class="fas fa-chevron-up"></i></button>
@@ -140,16 +178,106 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    function formatMoney(n){return n.toLocaleString('vi-VN')+'₫'}
-    function updateCartTotals(){let sub=0;document.querySelectorAll('.cart-item').forEach(r=>{let p=parseInt(r.getAttribute('data-price')),q=parseInt(r.querySelector('.input-qty').value),t=p*q;r.querySelector('.item-total').innerText=formatMoney(t);sub+=t});let vat=sub*0.08,tot=sub+vat;document.getElementById('subTotalDisplay').innerText=formatMoney(sub);document.getElementById('vatDisplay').innerText=formatMoney(vat);document.getElementById('grandTotalDisplay').innerText=formatMoney(tot)}
-    function updateCartQty(b,c){let i=b.parentElement.querySelector('.input-qty'),v=parseInt(i.value)+c;if(v>=1){i.value=v;updateCartTotals()}}
-    function removeItem(b){if(confirm('Xóa sản phẩm này?')){b.closest('tr').remove();updateCartTotals()}}
-    updateCartTotals();
-    const backToTopBtn=document.getElementById("backToTopBtn"),contactToggleBtn=document.getElementById("contactToggleBtn"),contactPopup=document.getElementById("contactPopup");
-    window.onscroll=function(){document.body.scrollTop>300||document.documentElement.scrollTop>300?backToTopBtn.classList.add("show"):backToTopBtn.classList.remove("show")};
-    backToTopBtn.addEventListener("click",function(){window.scrollTo({top:0,behavior:'smooth'})});
-    contactToggleBtn.addEventListener("click",function(e){e.stopPropagation();contactToggleBtn.classList.toggle("active");contactPopup.classList.toggle("active")});
-    document.addEventListener("click",function(e){if(!contactToggleBtn.contains(e.target)&&!contactPopup.contains(e.target)){contactToggleBtn.classList.remove("active");contactPopup.classList.remove("active")}});
+    // Update số lượng & tổng realtime
+    function updateQuantity(cartItemId, change) {
+        let row = document.querySelector(`tr:has(button[onclick*='${cartItemId}'])`);
+        let qtyInput = row.querySelector('input[type="number"]');
+        let newQty = parseInt(qtyInput.value) + change;
+
+        if (newQty < 1) {
+            if (confirm('Xóa sản phẩm này khỏi giỏ hàng?')) {
+                window.location.href = '/cart/remove/' + cartItemId;
+            }
+            return;
+        }
+
+        fetch('/cart/update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `id=${cartItemId}&quantity=${newQty}`
+        }).then(response => {
+            if (response.ok) {
+                qtyInput.value = newQty;
+
+                // Update tổng item
+                let price = parseFloat(row.querySelector('td:nth-child(2)').innerText.replace(/[^0-9]/g, ''));
+                let itemTotal = price * newQty;
+                row.querySelector('[id^="total-"]').innerText = itemTotal.toLocaleString('vi-VN') + ' ₫';
+
+                // Update tổng giỏ
+                updateGrandTotal();
+
+                // Update badge
+                updateCartBadge();
+            }
+        });
+    }
+
+    // Tính tổng giỏ hàng
+    function updateGrandTotal() {
+        let itemTotals = document.querySelectorAll('[id^="total-"]');
+        let grandTotal = 0;
+        itemTotals.forEach(total => {
+            grandTotal += parseFloat(total.innerText.replace(/[^0-9]/g, ''));
+        });
+        document.getElementById('grandTotal').innerText = grandTotal.toLocaleString('vi-VN') + ' ₫';
+    }
+
+    // Update badge realtime
+    function updateCartBadge() {
+        fetch('/cart/count')
+            .then(response => response.text())
+            .then(count => {
+                document.getElementById('cartBadge').innerText = count;
+            });
+    }
+
+    // Mua hàng: Xóa giỏ + cảm ơn
+    function checkout() {
+        if (confirm('Xác nhận mua hàng? Giỏ hàng sẽ được xóa.')) {
+            fetch('/cart/clear')
+                .then(response => {
+                    if (response.ok) {
+                        alert('Cảm ơn bạn đã mua hàng! Đơn hàng đang được xử lý.');
+                        location.reload();
+                    } else {
+                        alert('Lỗi, vui lòng thử lại!');
+                    }
+                });
+        }
+    }
+
+    // Load ban đầu
+    window.onload = function() {
+        updateCartBadge();
+        updateGrandTotal();
+    };
+
+    // Floating script gốc của bạn
+    const backToTopBtn = document.getElementById("backToTopBtn");
+    const contactToggleBtn = document.getElementById("contactToggleBtn");
+    const contactPopup = document.getElementById("contactPopup");
+    window.onscroll = function() {
+        if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+            backToTopBtn.classList.add("show");
+        } else {
+            backToTopBtn.classList.remove("show");
+        }
+    };
+    backToTopBtn.addEventListener("click", function() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    contactToggleBtn.addEventListener("click", function(e) {
+        e.stopPropagation();
+        contactToggleBtn.classList.toggle("active");
+        contactPopup.classList.toggle("active");
+    });
+    document.addEventListener("click", function(event) {
+        if (!contactToggleBtn.contains(event.target) && !contactPopup.contains(event.target)) {
+            contactToggleBtn.classList.remove("active");
+            contactPopup.classList.remove("active");
+        }
+    });
 </script>
 </body>
 </html>

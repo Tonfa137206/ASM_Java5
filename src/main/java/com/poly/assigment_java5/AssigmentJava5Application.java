@@ -4,10 +4,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class AsmtestApplication {
-
+public class AssigmentJava5Application {
     public static void main(String[] args) {
-        SpringApplication.run(AsmtestApplication.class, args);
+        SpringApplication.run(AssigmentJava5Application.class, args);
+        System.out.println("✅ Application started at: http://localhost:8080");
     }
-
 }

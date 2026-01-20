@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chi Tiết Sản Phẩm - FruitGarden</title>
+    <title th:text="${product.name} + ' - FruitGarden'">Chi Tiết Sản Phẩm - FruitGarden</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        :root { --primary: #2ecc71; --primary-dark: #27ae60; --accent: #e74c3c; --dark-green: #145a32; --text-main: #2c3e50; --fab-color: #6f42c1; }
+        :root { --primary: #2ecc71; --accent: #e74c3c; --dark-green: #145a32; --text-main: #2c3e50; --fab-color: #6f42c1; }
         body { font-family: 'Segoe UI', sans-serif; background-color: #f8f9fa; color: var(--text-main); }
         .navbar { background: rgba(255, 255, 255, 0.98); box-shadow: 0 4px 20px rgba(0,0,0,0.05); padding: 15px 0; }
         .nav-link { font-weight: 600; color: var(--text-main) !important; margin: 0 12px; position: relative; }
@@ -27,170 +27,133 @@
         .btn-float { width: 50px; height: 50px; border-radius: 50%; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; color: white; transition: 0.3s; }
         .btn-up { background-color: #6c757d; opacity: 0; visibility: hidden; transform: translateY(20px); }
         .btn-up.show { opacity: 1; visibility: visible; transform: translateY(0); }
-        .btn-contact-main { background: var(--fab-color); font-size: 1.4rem; position: relative; }
-        .btn-ripple { position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 1px solid var(--fab-color); animation: ripple 1.5s infinite; z-index: -1; }
-        @keyframes ripple { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.6); opacity: 0; } }
-        .contact-popup { position: absolute; bottom: 70px; right: 0; width: 200px; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
-        .contact-item { display: flex; align-items: center; background: white; padding: 8px 15px; border-radius: 50px; text-decoration: none; color: #333; font-weight: 600; box-shadow: 0 5px 15px rgba(0,0,0,0.1); opacity: 0; transform: translateX(50px) scale(0.5); }
-        .icon-box { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; color: white; margin-right: 10px; }
-        .zalo .icon-box { background: #0068ff; } .phone .icon-box { background: #2ecc71; } .facebook .icon-box { background: #1877f2; } .email .icon-box { background: #ea4335; }
-        .contact-popup.active { pointer-events: auto; }
-        .contact-popup.active .contact-item { opacity: 1; transform: translateX(0) scale(1); }
-        .btn-contact-main.active { background: #dc3545; } .btn-contact-main.active .icon-close { display: block; } .btn-contact-main.active .icon-main { display: none; } .icon-close { display: none; }
-        .contact-item:hover { transform: translateX(-5px) !important; }
-        .contact-popup.active .contact-item:nth-child(4) { transition-delay: 0.05s; }
-        .contact-popup.active .contact-item:nth-child(3) { transition-delay: 0.1s; }
-        .contact-popup.active .contact-item:nth-child(2) { transition-delay: 0.15s; }
-        .contact-popup.active .contact-item:nth-child(1) { transition-delay: 0.2s; }
-
-        .breadcrumb-section { background-color: #e9ecef; padding: 15px 0; margin-bottom: 30px; }
-        .breadcrumb-item a { color: var(--dark-green); text-decoration: none; } .breadcrumb-item.active { color: #6c757d; }
-        .product-main-img { border-radius: 15px; overflow: hidden; border: 1px solid #eee; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 15px; }
-        .thumb-img { border-radius: 10px; cursor: pointer; border: 2px solid transparent; opacity: 0.7; transition: 0.3s; }
-        .thumb-img:hover, .thumb-img.active { border-color: var(--primary); opacity: 1; }
-        .product-price-lg { color: var(--accent); font-size: 2rem; font-weight: 800; }
-        .quantity-control { display: flex; align-items: center; border: 1px solid #dee2e6; border-radius: 8px; overflow: hidden; width: fit-content; }
-        .btn-qty { border: none; background: #fff; padding: 8px 15px; } .btn-qty:hover { background: #f0f0f0; }
-        .input-qty { border: none; text-align: center; width: 50px; font-weight: 600; outline: none; }
-        .nav-tabs .nav-link { color: #555; font-weight: 600; border: none; border-bottom: 3px solid transparent; padding: 15px 25px; }
-        .nav-tabs .nav-link.active { color: var(--primary); border-bottom-color: var(--primary); background: transparent; }
-        .tab-content { background: white; padding: 30px; border-radius: 0 0 15px 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.02); }
-        .product-card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: 0.3s; border: 1px solid #eee; height: 100%; }
-        .product-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); border-color: var(--primary); }
-        .product-img-wrap { height: 200px; overflow: hidden; position: relative; }
-        .product-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+        .btn-contact-main { background: var(--fab-color); font-size: 1.4rem; position: relative; overflow: hidden; }
+        .btn-contact-main.active { background: var(--accent); }
+        .btn-ripple { position: absolute; width: 100px; height: 100px; border-radius: 50%; background: rgba(255,255,255,0.3); transform: scale(0); animation: ripple 0.6s linear; pointer-events: none; }
+        @keyframes ripple { to { transform: scale(2.5); opacity: 0; } }
+        .contact-popup { position: absolute; bottom: 70px; right: 0; width: 250px; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); padding: 15px; opacity: 0; visibility: hidden; transform: translateY(20px); transition: 0.3s; }
+        .contact-popup.active { opacity: 1; visibility: visible; transform: translateY(0); }
+        .contact-popup a { display: flex; align-items: center; gap: 10px; color: var(--text-main); text-decoration: none; padding: 10px; border-radius: 10px; transition: 0.3s; }
+        .contact-popup a:hover { background: #f0fff4; color: var(--primary); }
+        .contact-popup .icon-wrap { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: white; }
+        .icon-wrap.fb { background: #1877f2; } .icon-wrap.zalo { background: #0068ff; } .icon-wrap.phone { background: var(--primary); }
     </style>
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg sticky-top">
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg fixed-top">
     <div class="container">
-        <a class="navbar-brand fw-bold text-success fs-3" href="../../../../../../../../../Users/LE%20QUOC%20TOAN/Downloads/index.html"><i class="fas fa-leaf me-2"></i>FruitGarden</a>
+        <a class="navbar-brand fw-bold text-success fs-3" href="/"><i class="fas fa-leaf me-2"></i>FruitGarden</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
             <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link" href="../../../../../../../../../Users/LE%20QUOC%20TOAN/Downloads/index.html">TRANG CHỦ</a></li>
-                <li class="nav-item"><a class="nav-link active" href="#">SẢN PHẨM</a></li>
+                <li class="nav-item"><a class="nav-link" href="/">TRANG CHỦ</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/products">SẢN PHẨM</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">BLOG SỨC KHỎE</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">LIÊN HỆ</a></li>
             </ul>
         </div>
-        <div class="d-flex align-items-center gap-3">
-            <i class="fas fa-search fs-5 text-secondary pointer"></i>
-            <a href="login.html" class="text-success fs-5"><i class="far fa-user"></i></a>
-            <div class="position-relative">
-                <a href="cart.html" class="text-secondary">
-                    <i class="fas fa-shopping-bag fs-5 text-secondary"></i>
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">3</span>
+        <div class="d-flex align-items-center">
+            <a href="/cart" class="position-relative me-3 text-dark">
+                <i class="fas fa-shopping-cart fs-5"></i>
+                <span th:text="${cartCount}" class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle">0</span>
+            </a>
+
+            <!-- Khi đã đăng nhập -->
+            <th:block th:if="${session.account != null}">
+                <a href="/profile" class="me-3 text-dark">
+                    <i class="fas fa-user fs-5"></i> <span th:text="${session.account.fullname}"></span>
                 </a>
-            </div>
+                <a href="/logout" class="text-danger">
+                    <i class="fas fa-sign-out-alt fs-5"></i> Đăng xuất
+                </a>
+            </th:block>
+
+            <!-- Khi chưa đăng nhập -->
+            <th:block th:unless="${session.account != null}">
+                <a href="/login" class="text-dark me-3">
+                    <i class="fas fa-sign-in-alt fs-5"></i> Đăng nhập
+                </a>
+                <a href="/register" class="text-success">
+                    <i class="fas fa-user-plus fs-5"></i> Đăng ký
+                </a>
+            </th:block>
         </div>
     </div>
 </nav>
 
-<nav class="breadcrumb-section">
-    <div class="container">
-        <ol class="breadcrumb m-0">
-            <li class="breadcrumb-item"><a href="../../../../../../../../../Users/LE%20QUOC%20TOAN/Downloads/index.html">Trang chủ</a></li>
-            <li class="breadcrumb-item"><a href="#">Trái cây nhập khẩu</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Dâu Tây Nhật</li>
-        </ol>
-    </div>
-</nav>
-
-<section class="container mb-5">
+<!-- Nội dung chi tiết sản phẩm -->
+<div class="container mt-5 pt-5">
     <div class="row">
-        <div class="col-md-6 mb-4">
-            <div class="product-main-img">
-                <img id="mainImage" src="https://images.unsplash.com/photo-1595475207225-428b62bda831?w=800" class="img-fluid w-100" alt="Main Product">
-            </div>
-            <div class="row g-2">
-                <div class="col-3"><img src="https://images.unsplash.com/photo-1595475207225-428b62bda831?w=200" class="img-fluid thumb-img active" onclick="changeImage(this)"></div>
-                <div class="col-3"><img src="https://images.unsplash.com/photo-1518635017498-87f514b751ba?w=200" class="img-fluid thumb-img" onclick="changeImage(this)"></div>
-                <div class="col-3"><img src="https://images.unsplash.com/photo-1627804981881-8b2612a20a4b?w=200" class="img-fluid thumb-img" onclick="changeImage(this)"></div>
-            </div>
+        <div class="col-md-6">
+            <img th:src="${product.image}" th:alt="${product.name}" class="img-fluid rounded shadow">
         </div>
 
         <div class="col-md-6">
-            <h2 class="fw-bold text-dark">Dâu Tây Nhật Bản (Hộp 500g)</h2>
-            <div class="d-flex align-items-center gap-2 mb-3">
-                <div class="text-warning small"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i></div>
-                <span class="text-muted small">(128 đánh giá)</span>
-                <span class="text-muted small border-start ps-2">Mã SP: DT001</span>
-            </div>
-            <div class="product-price-lg mb-3">250.000₫ <span class="text-muted fs-5 text-decoration-line-through fw-normal ms-2">300.000₫</span></div>
-            <p class="text-secondary">Dâu tây Nhật Bản được trồng theo phương pháp hữu cơ, quả to, mọng nước, vị ngọt thanh và hương thơm nồng nàn đặc trưng.</p>
+            <h2 class="fw-bold mb-3" th:text="${product.name}">Tên Sản Phẩm</h2>
 
-            <div class="mb-4">
-                <label class="fw-bold mb-2 d-block">Số lượng:</label>
-                <div class="quantity-control">
-                    <button class="btn-qty" onclick="updateQty(-1)"><i class="fas fa-minus"></i></button>
-                    <input type="text" id="qtyInput" value="1" class="input-qty" readonly>
-                    <button class="btn-qty" onclick="updateQty(1)"><i class="fas fa-plus"></i></button>
+            <div class="mb-3">
+                <span class="fs-3 fw-bold text-success me-3" th:text="${product.price} + ' ₫'">Giá</span>
+                <!-- Bỏ phần oldPrice để tránh lỗi (nếu sau này thêm field thì mới mở lại) -->
+                <!-- <del th:if="${product.oldPrice}" class="text-muted" th:text="${product.oldPrice} + ' ₫'">Giá cũ</del> -->
+            </div>
+
+            <p class="mb-4" th:utext="${product.description}">Mô tả sản phẩm...</p>
+
+            <div class="d-flex align-items-center mb-4">
+                <span class="fw-bold me-3">Số lượng:</span>
+                <div class="input-group" style="width: 150px;">
+                    <button type="button" class="btn btn-outline-secondary" onclick="updateQty(-1)">-</button>
+                    <input type="number" id="qtyInput" name="quantity" value="1" min="1" class="form-control text-center">
+                    <button type="button" class="btn btn-outline-secondary" onclick="updateQty(1)">+</button>
                 </div>
             </div>
 
-            <div class="d-flex gap-3 mb-4">
-                <button class="btn btn-outline-success px-4 py-2 fw-bold flex-grow-1"><i class="fas fa-cart-plus me-2"></i>THÊM VÀO GIỎ</button>
-                <button onclick="window.location.href='cart.html'" class="btn btn-success px-4 py-2 fw-bold flex-grow-1">MUA NGAY</button>
-            </div>
+            <form id="addToCartForm" th:action="@{/cart/add}" method="post">
+                <input type="hidden" name="productId" th:value="${product.id}">
+                <input type="hidden" id="actionInput" name="action" value="">
 
-            <div class="border-top pt-3 small text-muted">
-                <div class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Cam kết 100% chính hãng</div>
-                <div class="mb-2"><i class="fas fa-truck text-success me-2"></i>Miễn phí vận chuyển đơn từ 500k</div>
-                <div><i class="fas fa-sync text-success me-2"></i>Đổi trả trong 24h nếu hư hỏng</div>
+                <div class="d-flex gap-3">
+                    <button type="button" class="btn btn-primary btn-lg" onclick="addToCart('cart')">
+                        Thêm vào giỏ
+                    </button>
+                    <button type="button" class="btn btn-success btn-lg" onclick="addToCart('buynow')">
+                        Mua ngay
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tab Mô tả & Đánh giá -->
+    <div class="mt-5">
+        <ul class="nav nav-tabs">
+            <li class="nav-item"><a class="nav-link active" href="#description">Mô tả</a></li>
+            <li class="nav-item"><a class="nav-link" href="#reviews">Đánh giá</a></li>
+        </ul>
+        <div class="tab-content mt-3">
+            <div id="description" class="tab-pane active">
+                <p th:utext="${product.description}">Chi tiết mô tả...</p>
+            </div>
+            <div id="reviews" class="tab-pane">
+                <p>Chưa có đánh giá nào.</p>
             </div>
         </div>
     </div>
-</section>
+</div>
 
-<section class="container mb-5">
-    <ul class="nav nav-tabs" id="myTab" role="tablist">
-        <li class="nav-item"><button class="nav-link active" id="desc-tab" data-bs-toggle="tab" data-bs-target="#desc">Mô Tả Chi Tiết</button></li>
-        <li class="nav-item"><button class="nav-link" id="review-tab" data-bs-toggle="tab" data-bs-target="#review">Đánh Giá (128)</button></li>
-    </ul>
-    <div class="tab-content border border-top-0 rounded-bottom p-4">
-        <div class="tab-pane fade show active" id="desc">
-            <p>Dâu tây giống Nhật (Japanese Strawberry) nổi tiếng thế giới...</p>
-        </div>
-        <div class="tab-pane fade" id="review">
-            <div class="d-flex gap-3 mb-3">
-                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">AV</div>
-                <div><h6 class="fw-bold mb-0">An Võ</h6><p class="small text-muted mb-0">Dâu rất tươi, giao nhanh.</p></div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="container mb-5">
-    <h3 class="fw-bold mb-4">Sản Phẩm Tương Tự</h3>
-    <div class="row g-4">
-        <div class="col-md-3 col-sm-6">
-            <div class="product-card">
-                <div class="product-img-wrap"><img src="https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=500" class="w-100 h-100 object-fit-cover"></div>
-                <div class="p-3 text-center"><h6 class="fw-bold">Táo Envy</h6><div class="text-danger fw-bold">180.000₫</div><a href="product-detail.html" class="btn btn-sm btn-outline-success mt-2">Xem chi tiết</a></div>
-            </div>
-        </div>
-        <div class="col-md-3 col-sm-6">
-            <div class="product-card">
-                <div class="product-img-wrap"><img src="https://images.unsplash.com/photo-1596591606975-97ee5cef3a1e?w=500" class="w-100 h-100 object-fit-cover"></div>
-                <div class="p-3 text-center"><h6 class="fw-bold">Kiwi Vàng</h6><div class="text-danger fw-bold">220.000₫</div><a href="product-detail.html" class="btn btn-sm btn-outline-success mt-2">Xem chi tiết</a></div>
-            </div>
-        </div>
-    </div>
-</section>
-
+<!-- Floating buttons -->
 <div class="floating-group">
-    <button id="backToTopBtn" class="btn-float btn-up"><i class="fas fa-chevron-up"></i></button>
-    <div class="contact-wrapper">
-        <div class="contact-popup" id="contactPopup">
-            <a href="#" class="contact-item zalo"><div class="icon-box"><i class="fas fa-comment-dots"></i></div><span>Chat Zalo</span></a>
-            <a href="#" class="contact-item phone"><div class="icon-box"><i class="fas fa-phone-alt"></i></div><span>Gọi ngay</span></a>
-        </div>
-        <button id="contactToggleBtn" class="btn-float btn-contact-main"><i class="fas fa-headset icon-main"></i><i class="fas fa-times icon-close"></i><span class="btn-ripple"></span></button>
+    <button id="backToTopBtn" class="btn-float btn-up"><i class="fas fa-arrow-up"></i></button>
+    <div id="contactPopup" class="contact-popup">
+        <a href="#"><div class="icon-wrap fb"><i class="fab fa-facebook-messenger"></i></div><span>Chat Facebook</span></a>
+        <a href="#"><div class="icon-wrap zalo"><i class="fab fa-whatsapp"></i></div><span>Chat Zalo</span></a>
+        <a href="#"><div class="icon-wrap phone"><i class="fas fa-phone-alt"></i></div><span>Gọi ngay</span></a>
     </div>
+    <button id="contactToggleBtn" class="btn-float btn-contact-main"><i class="fas fa-headset icon-main"></i><i class="fas fa-times icon-close"></i><span class="btn-ripple"></span></button>
 </div>
 
 <footer>
@@ -208,12 +171,27 @@
 <script>
     function changeImage(e) { document.getElementById('mainImage').src=e.src; document.querySelectorAll('.thumb-img').forEach(t=>t.classList.remove('active')); e.classList.add('active'); }
     function updateQty(c) { var i=document.getElementById('qtyInput'); var v=parseInt(i.value)+c; if(v>=1) i.value=v; }
+    function addToCart(action) {
+        document.getElementById('actionInput').value = action;
+        document.getElementById('addToCartForm').submit();
+    }
+
     // Floating
     const backToTopBtn=document.getElementById("backToTopBtn"), contactToggleBtn=document.getElementById("contactToggleBtn"), contactPopup=document.getElementById("contactPopup");
     window.onscroll=function(){document.body.scrollTop>300||document.documentElement.scrollTop>300?backToTopBtn.classList.add("show"):backToTopBtn.classList.remove("show")};
     backToTopBtn.addEventListener("click",function(){window.scrollTo({top:0,behavior:'smooth'})});
     contactToggleBtn.addEventListener("click",function(e){e.stopPropagation(); contactToggleBtn.classList.toggle("active"); contactPopup.classList.toggle("active")});
     document.addEventListener("click",function(e){if(!contactToggleBtn.contains(e.target)&&!contactPopup.contains(e.target)){contactToggleBtn.classList.remove("active");contactPopup.classList.remove("active")}});
+    function updateQty(c) {
+        var i = document.getElementById('qtyInput');
+        var v = parseInt(i.value) + c;
+        if (v >= 1) i.value = v;
+    }
+
+    function addToCart(action) {
+        document.getElementById('actionInput').value = action;
+        document.getElementById('addToCartForm').submit();
+    }
 </script>
 </body>
 </html>
