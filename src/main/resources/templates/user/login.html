@@ -109,12 +109,14 @@
         .social-btn:hover {
             background: #f8f9fa;
         }
-        footer {
-            background-color: var(--dark-green);
-            color: #e8f5e9;
-            padding: 40px 0;
-            margin-top: auto;
-        }
+        footer { background-color: var(--dark-green); color: #e8f5e9; position: relative; margin-top: auto; /* Đẩy footer xuống đáy */ }
+        .footer-wave { position: absolute; top: -50px; left: 0; width: 100%; overflow: hidden; line-height: 0; }
+        .footer-wave svg { display: block; width: calc(130% + 1.3px); height: 50px; }
+        .footer-wave .shape-fill { fill: var(--dark-green); }
+        .social-circle { width: 40px; height: 40px; border: 1px solid #a5d6a7; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: white; margin-right: 10px; transition: 0.3s; }
+        .social-circle:hover { background: var(--primary); border-color: var(--primary); }
+        .footer-link { color: #a5d6a7; text-decoration: none; display: block; margin-bottom: 8px; transition: 0.3s; }
+        .footer-link:hover { color: white; transform: translateX(5px); }
     </style>
 </head>
 <body>
@@ -126,10 +128,22 @@
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
             <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link" href="/register">Đăng ký</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/">TRANG CHỦ</a></li>
+                <li class="nav-item"><a class="nav-link" href="/products">SẢN PHẨM</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">BLOG SỨC KHỎE</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">LIÊN HỆ</a></li>
             </ul>
+        </div>
+        <div class="d-flex align-items-center">
+            <a href="/cart" class="position-relative me-3 text-dark">
+                <i class="fas fa-shopping-cart fs-5"></i>
+                <span th:text="${cartCount}" class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle">0</span>
+            </a>
+            <a href="/login" class="text-dark">
+                <i class="fas fa-user fs-5"></i>
+            </a>
         </div>
     </div>
 </nav>
@@ -214,8 +228,49 @@
 </section>
 
 <!-- Footer đơn giản -->
-<footer class="text-center py-4">
-    <p class="text-muted small mb-0">&copy; 2024 FruitGarden. Designed for IntelliJ Project.</p>
+<footer>
+    <div class="footer-wave">
+        <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
+        </svg>
+    </div>
+    <div class="container pb-5 pt-3">
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <h3 class="fw-bold text-white mb-3">FruitGarden<span class="text-success">.</span></h3>
+                <p class="text-white-50 small">Chúng tôi cam kết cung cấp các sản phẩm trái cây sạch, đạt chuẩn chất lượng quốc tế.</p>
+                <div class="mt-4">
+                    <a href="#" class="social-circle"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-circle"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="social-circle"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-6 mb-4">
+                <h5 class="fw-bold mb-3">Liên Kết</h5>
+                <a href="#" class="footer-link">Về chúng tôi</a>
+                <a href="#" class="footer-link">Cửa hàng</a>
+                <a href="#" class="footer-link">Liên hệ</a>
+            </div>
+            <div class="col-lg-2 col-md-6 mb-4">
+                <h5 class="fw-bold mb-3">Hỗ Trợ</h5>
+                <a href="#" class="footer-link">Chính sách đổi trả</a>
+                <a href="#" class="footer-link">Bảo mật thông tin</a>
+                <a href="#" class="footer-link">Hướng dẫn mua hàng</a>
+            </div>
+            <div class="col-lg-4 mb-4">
+                <h5 class="fw-bold mb-3">Bản Tin</h5>
+                <p class="text-white-50 small">Đăng ký để nhận thông tin mới nhất.</p>
+                <div class="input-group">
+                    <input type="text" class="form-control border-0" placeholder="Email của bạn...">
+                    <button class="btn btn-success">Đăng Ký</button>
+                </div>
+            </div>
+        </div>
+        <hr class="border-secondary mt-4">
+        <div class="text-center text-white-50 small">
+            &copy; 2024 FruitGarden. Designed for IntelliJ Project.
+        </div>
+    </div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
