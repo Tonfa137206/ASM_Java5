@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chi Tiết Sản Phẩm - FruitGarden</title>
+    <title th:text="${item.name} + ' - FruitGarden'">Chi Tiết Sản Phẩm - FruitGarden</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -65,25 +65,25 @@
 
 <nav class="navbar navbar-expand-lg sticky-top">
     <div class="container">
-        <a class="navbar-brand fw-bold text-success fs-3" href="../../../../../../../../../Users/LE%20QUOC%20TOAN/Downloads/index.html"><i class="fas fa-leaf me-2"></i>FruitGarden</a>
+        <a class="navbar-brand fw-bold text-success fs-3" th:href="@{/}"><i class="fas fa-leaf me-2"></i>FruitGarden</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
             <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link" href="../../../../../../../../../Users/LE%20QUOC%20TOAN/Downloads/index.html">TRANG CHỦ</a></li>
-                <li class="nav-item"><a class="nav-link active" href="#">SẢN PHẨM</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/}">TRANG CHỦ</a></li>
+                <li class="nav-item"><a class="nav-link active" th:href="@{/product/list}">SẢN PHẨM</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">BLOG SỨC KHỎE</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">LIÊN HỆ</a></li>
             </ul>
         </div>
         <div class="d-flex align-items-center gap-3">
             <i class="fas fa-search fs-5 text-secondary pointer"></i>
-            <a href="login.html" class="text-success fs-5"><i class="far fa-user"></i></a>
+            <a th:href="@{/login}" class="text-success fs-5"><i class="far fa-user"></i></a>
             <div class="position-relative">
-                <a href="cart.html" class="text-secondary">
+                <a th:href="@{/cart/view}" class="text-secondary">
                     <i class="fas fa-shopping-bag fs-5 text-secondary"></i>
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">3</span>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
                 </a>
             </div>
         </div>
@@ -93,35 +93,39 @@
 <nav class="breadcrumb-section">
     <div class="container">
         <ol class="breadcrumb m-0">
-            <li class="breadcrumb-item"><a href="../../../../../../../../../Users/LE%20QUOC%20TOAN/Downloads/index.html">Trang chủ</a></li>
-            <li class="breadcrumb-item"><a href="#">Trái cây nhập khẩu</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Dâu Tây Nhật</li>
+            <li class="breadcrumb-item"><a th:href="@{/}">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a href="#" th:text="${item.category.name}">Loại hàng</a></li>
+            <li class="breadcrumb-item active" aria-current="page" th:text="${item.name}">Tên sản phẩm</li>
         </ol>
     </div>
 </nav>
 
-<section class="container mb-5">
+<section class="container mb-5" th:object="${item}">
     <div class="row">
         <div class="col-md-6 mb-4">
             <div class="product-main-img">
-                <img id="mainImage" src="https://images.unsplash.com/photo-1595475207225-428b62bda831?w=800" class="img-fluid w-100" alt="Main Product">
+                <img id="mainImage" th:src="@{|/images/products/*{image}|}" class="img-fluid w-100"
+                     onerror="this.src='https://via.placeholder.com/800x800?text=No+Image'" alt="Main Product">
             </div>
             <div class="row g-2">
-                <div class="col-3"><img src="https://images.unsplash.com/photo-1595475207225-428b62bda831?w=200" class="img-fluid thumb-img active" onclick="changeImage(this)"></div>
-                <div class="col-3"><img src="https://images.unsplash.com/photo-1518635017498-87f514b751ba?w=200" class="img-fluid thumb-img" onclick="changeImage(this)"></div>
-                <div class="col-3"><img src="https://images.unsplash.com/photo-1627804981881-8b2612a20a4b?w=200" class="img-fluid thumb-img" onclick="changeImage(this)"></div>
+                <div class="col-3"><img th:src="@{|/images/products/*{image}|}" class="img-fluid thumb-img active" onclick="changeImage(this)"></div>
+                <div class="col-3"><img th:src="@{|/images/products/*{image}|}" class="img-fluid thumb-img" onclick="changeImage(this)" style="filter: hue-rotate(90deg)"></div> <div class="col-3"><img th:src="@{|/images/products/*{image}|}" class="img-fluid thumb-img" onclick="changeImage(this)" style="filter: hue-rotate(180deg)"></div>
             </div>
         </div>
 
         <div class="col-md-6">
-            <h2 class="fw-bold text-dark">Dâu Tây Nhật Bản (Hộp 500g)</h2>
+            <h2 class="fw-bold text-dark" th:text="*{name}">Tên Sản Phẩm</h2>
             <div class="d-flex align-items-center gap-2 mb-3">
                 <div class="text-warning small"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i></div>
                 <span class="text-muted small">(128 đánh giá)</span>
-                <span class="text-muted small border-start ps-2">Mã SP: DT001</span>
+                <span class="text-muted small border-start ps-2" th:text="'Mã SP: ' + *{id}">Mã SP: 001</span>
             </div>
-            <div class="product-price-lg mb-3">250.000₫ <span class="text-muted fs-5 text-decoration-line-through fw-normal ms-2">300.000₫</span></div>
-            <p class="text-secondary">Dâu tây Nhật Bản được trồng theo phương pháp hữu cơ, quả to, mọng nước, vị ngọt thanh và hương thơm nồng nàn đặc trưng.</p>
+
+            <div class="product-price-lg mb-3">
+                <span th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">250.000₫</span>
+            </div>
+
+            <p class="text-secondary">Sản phẩm chất lượng cao từ FruitGarden, đảm bảo tươi ngon và an toàn vệ sinh thực phẩm.</p>
 
             <div class="mb-4">
                 <label class="fw-bold mb-2 d-block">Số lượng:</label>
@@ -133,8 +137,12 @@
             </div>
 
             <div class="d-flex gap-3 mb-4">
-                <button class="btn btn-outline-success px-4 py-2 fw-bold flex-grow-1"><i class="fas fa-cart-plus me-2"></i>THÊM VÀO GIỎ</button>
-                <button onclick="window.location.href='cart.html'" class="btn btn-success px-4 py-2 fw-bold flex-grow-1">MUA NGAY</button>
+                <a th:href="@{|/cart/add/*{id}|}" class="btn btn-outline-success px-4 py-2 fw-bold flex-grow-1 text-decoration-none d-flex align-items-center justify-content-center">
+                    <i class="fas fa-cart-plus me-2"></i>THÊM VÀO GIỎ
+                </a>
+                <a th:href="@{|/cart/add/*{id}|}" class="btn btn-success px-4 py-2 fw-bold flex-grow-1 text-decoration-none d-flex align-items-center justify-content-center">
+                    MUA NGAY
+                </a>
             </div>
 
             <div class="border-top pt-3 small text-muted">
@@ -149,34 +157,16 @@
 <section class="container mb-5">
     <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item"><button class="nav-link active" id="desc-tab" data-bs-toggle="tab" data-bs-target="#desc">Mô Tả Chi Tiết</button></li>
-        <li class="nav-item"><button class="nav-link" id="review-tab" data-bs-toggle="tab" data-bs-target="#review">Đánh Giá (128)</button></li>
+        <li class="nav-item"><button class="nav-link" id="review-tab" data-bs-toggle="tab" data-bs-target="#review">Đánh Giá</button></li>
     </ul>
     <div class="tab-content border border-top-0 rounded-bottom p-4">
         <div class="tab-pane fade show active" id="desc">
-            <p>Dâu tây giống Nhật (Japanese Strawberry) nổi tiếng thế giới...</p>
+            <p>Thông tin chi tiết về sản phẩm đang được cập nhật...</p>
         </div>
         <div class="tab-pane fade" id="review">
             <div class="d-flex gap-3 mb-3">
-                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">AV</div>
-                <div><h6 class="fw-bold mb-0">An Võ</h6><p class="small text-muted mb-0">Dâu rất tươi, giao nhanh.</p></div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="container mb-5">
-    <h3 class="fw-bold mb-4">Sản Phẩm Tương Tự</h3>
-    <div class="row g-4">
-        <div class="col-md-3 col-sm-6">
-            <div class="product-card">
-                <div class="product-img-wrap"><img src="https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=500" class="w-100 h-100 object-fit-cover"></div>
-                <div class="p-3 text-center"><h6 class="fw-bold">Táo Envy</h6><div class="text-danger fw-bold">180.000₫</div><a href="product-detail.html" class="btn btn-sm btn-outline-success mt-2">Xem chi tiết</a></div>
-            </div>
-        </div>
-        <div class="col-md-3 col-sm-6">
-            <div class="product-card">
-                <div class="product-img-wrap"><img src="https://images.unsplash.com/photo-1596591606975-97ee5cef3a1e?w=500" class="w-100 h-100 object-fit-cover"></div>
-                <div class="p-3 text-center"><h6 class="fw-bold">Kiwi Vàng</h6><div class="text-danger fw-bold">220.000₫</div><a href="product-detail.html" class="btn btn-sm btn-outline-success mt-2">Xem chi tiết</a></div>
+                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">KH</div>
+                <div><h6 class="fw-bold mb-0">Khách hàng mẫu</h6><p class="small text-muted mb-0">Sản phẩm rất tốt!</p></div>
             </div>
         </div>
     </div>
@@ -200,7 +190,7 @@
             <div class="col-lg-4 mb-4"><h3 class="fw-bold text-white mb-3">FruitGarden<span class="text-success">.</span></h3></div>
             <div class="col-lg-4 mb-4 ms-auto"><h5 class="fw-bold mb-3">Liên Hệ</h5><p class="text-white-50 small">Hotline: 1900 6789</p></div>
         </div>
-        <hr class="border-secondary mt-4"><div class="text-center text-white-50 small">&copy; 2024 FruitGarden.</div>
+        <hr class="border-secondary mt-4"><div class="text-center text-white-50 small">&copy; 2026 FruitGarden.</div>
     </div>
 </footer>
 

@@ -82,23 +82,54 @@
 
 <nav class="navbar navbar-expand-lg sticky-top">
     <div class="container">
-        <a class="navbar-brand fw-bold text-success fs-3" href="../../../../../../../../../Users/LE%20QUOC%20TOAN/Downloads/index.html"><i class="fas fa-leaf me-2"></i>FruitGarden</a>
+        <a class="navbar-brand fw-bold text-success fs-3" th:href="@{/}"><i class="fas fa-leaf me-2"></i>FruitGarden</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
             <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link active" href="../../../../../../../../../Users/LE%20QUOC%20TOAN/Downloads/index.html">TRANG CHỦ</a></li>
-                <li class="nav-item"><a class="nav-link" href="../../../../../../../../../Users/LE%20QUOC%20TOAN/Downloads/product-detail.html">SẢN PHẨM</a></li>
+                <li class="nav-item"><a class="nav-link active" th:href="@{/}">TRANG CHỦ</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/product/list}">SẢN PHẨM</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">BLOG SỨC KHỎE</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">LIÊN HỆ</a></li>
             </ul>
         </div>
         <div class="d-flex align-items-center gap-3">
             <i class="fas fa-search fs-5 text-secondary pointer"></i>
-            <a href="login.html" class="text-secondary fs-5" title="Đăng nhập"><i class="far fa-user"></i></a>
+            <a th:if="${session.account == null}" th:href="@{/login}" class="text-secondary fs-5" title="Đăng nhập">
+                <i class="far fa-user"></i>
+            </a>
+
+            <div th:if="${session.account != null}" class="dropdown d-inline-block">
+                <a class="text-secondary fs-5 text-decoration-none dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img th:if="${session.account.photo != null}" th:src="@{|/images/${session.account.photo}|}"
+                         class="rounded-circle" style="width: 30px; height: 30px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/30'">
+
+                    <i th:unless="${session.account.photo != null}" class="fas fa-user-check text-success"></i>
+
+                    <span class="fs-6 ms-1 fw-bold text-dark" th:text="${session.account.username}">User</span>
+                </a>
+
+                <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                    <li>
+                        <a class="dropdown-item" th:href="@{/profile}">
+                            <i class="fas fa-id-card me-2 text-primary"></i> Thông tin cá nhân
+                        </a>
+                    </li>
+                    <li th:if="${session.account.role == true}"> <a class="dropdown-item" th:href="@{/admin/dashboard}">
+                        <i class="fas fa-tools me-2 text-warning"></i> Quản trị (Admin)
+                    </a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <a class="dropdown-item text-danger" th:href="@{/logout}">
+                            <i class="fas fa-sign-out-alt me-2"></i> Đăng xuất
+                        </a>
+                    </li>
+                </ul>
+            </div>
             <div class="position-relative">
-                <a href="cart.html" class="text-secondary">
+                <a th:href="@{/cart/view}" class="text-secondary">
                     <i class="fas fa-shopping-bag fs-5"></i>
                     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">3</span>
                 </a>
@@ -113,7 +144,7 @@
              style="background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('https://images.unsplash.com/photo-1610832958506-aa56368176cf?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') center/cover;">
             <div data-aos="fade-up">
                 <h1 class="display-3 fw-bold">Tươi Ngon Mỗi Ngày</h1>
-                <button class="btn btn-success rounded-pill px-4 py-2 mt-3 fw-bold" onclick="window.location.href='product-detail.html'">MUA NGAY</button>
+                <button class="btn btn-success rounded-pill px-4 py-2 mt-3 fw-bold" onclick="window.location.href='/product/list'">MUA NGAY</button>
             </div>
         </div>
         <div class="swiper-slide d-flex align-items-center justify-content-center text-white text-center"
@@ -129,11 +160,9 @@
             <div class="sidebar-card">
                 <div class="sidebar-header"><i class="fas fa-bars me-2"></i> Danh Mục</div>
                 <ul class="list-group list-group-flush category-list">
-                    <li class="list-group-item" onclick="window.location.href='product-detail.html'"><i class="fas fa-apple-alt"></i> Trái Cây Nhập Khẩu</li>
-                    <li class="list-group-item"><i class="fas fa-carrot"></i> Rau Củ Hữu Cơ</li>
-                    <li class="list-group-item"><i class="fas fa-gift"></i> Giỏ Quà Tặng</li>
-                    <li class="list-group-item"><i class="fas fa-wine-bottle"></i> Nước Ép Tươi</li>
-                    <li class="list-group-item"><i class="fas fa-seedling"></i> Hạt Dinh Dưỡng</li>
+                    <li class="list-group-item" th:each="c : ${cates}" th:onclick="'window.location.href=\'/product/list-by-category/' + ${c.id} + '\''">
+                        <i class="fas fa-apple-alt"></i> <span th:text="${c.name}">Trái Cây Nhập Khẩu</span>
+                    </li>
                 </ul>
             </div>
             <div class="sidebar-card p-3">
@@ -160,106 +189,31 @@
             </div>
 
             <div class="row g-4">
-                <div class="col-md-4 col-sm-6" data-aos="fade-up">
-                    <div class="product-card">
-                        <a href="../../../../../../../../../Users/LE%20QUOC%20TOAN/Downloads/product-detail.html" class="product-img-wrap">
-                            <img src="https://images.unsplash.com/photo-1595475207225-428b62bda831?w=600" class="img-default" alt="Dâu 1">
-                            <img src="https://images.unsplash.com/photo-1518635017498-87f514b751ba?w=600" class="img-hover" alt="Dâu 2">
-                            <div class="position-absolute top-0 start-0 m-2 badge bg-danger">-20%</div>
-                        </a>
-                        <div class="p-3 text-center d-flex flex-column flex-grow-1">
-                            <div class="text-muted small text-uppercase">Đà Lạt</div>
-                            <h5 class="fw-bold my-1"><a href="../../../../../../../../../Users/LE%20QUOC%20TOAN/Downloads/product-detail.html" class="text-decoration-none text-dark">Dâu Tây Nhật</a></h5>
-                            <div class="product-price">250.000₫</div>
-                            <div class="mt-auto pt-2">
-                                <button onclick="window.location.href='product-detail.html'" class="btn btn-outline-success rounded-pill btn-sm px-3 w-100">Xem Chi Tiết</button>
-                            </div>
-                        </div>
-                    </div>
+                <!-- Empty state message -->
+                <div th:if="${#lists.isEmpty(items)}" class="col-12 text-center py-5">
+                    <i class="fas fa-box-open fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted">Không có sản phẩm nào</h4>
+                    <p class="text-muted">Hiện tại chưa có sản phẩm nào trong cửa hàng. Vui lòng quay lại sau!</p>
                 </div>
-
-                <div class="col-md-4 col-sm-6" data-aos="fade-up" data-aos-delay="100">
+                
+                <!-- Product cards -->
+                <div class="col-md-4 col-sm-6" data-aos="fade-up" th:each="p : ${items}">
                     <div class="product-card">
-                        <a href="../../../../../../../../../Users/LE%20QUOC%20TOAN/Downloads/product-detail.html" class="product-img-wrap">
-                            <img src="https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=600" class="img-default">
-                            <img src="https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=600" class="img-hover">
+                        <a th:href="@{|/product/detail/${p.id}|}" class="product-img-wrap">
+                            <img th:src="@{|/images/products/${p.image}|}" class="img-default" th:alt="${p.name}"
+                                 onerror="this.src='https://images.unsplash.com/photo-1595475207225-428b62bda831?w=600'">
+                            <img th:src="@{|/images/products/${p.image}|}" class="img-hover" th:alt="${p.name}"
+                                 onerror="this.src='https://images.unsplash.com/photo-1518635017498-87f514b751ba?w=600'">
+                            <div class="position-absolute top-0 start-0 m-2 badge bg-danger" th:if="${p.price < 100000}">-20%</div>
                         </a>
                         <div class="p-3 text-center d-flex flex-column flex-grow-1">
-                            <div class="text-muted small text-uppercase">Mỹ</div>
-                            <h5 class="fw-bold my-1"><a href="../../../../../../../../../Users/LE%20QUOC%20TOAN/Downloads/product-detail.html" class="text-decoration-none text-dark">Táo Envy Size 24</a></h5>
-                            <div class="product-price">180.000₫</div>
+                            <div class="text-muted small text-uppercase" th:text="${p.origin}">Đà Lạt</div>
+                            <h5 class="fw-bold my-1">
+                                <a th:href="@{|/product/detail/${p.id}|}" class="text-decoration-none text-dark" th:text="${p.name}">Dâu Tây Nhật</a>
+                            </h5>
+                            <div class="product-price" th:text="${#numbers.formatDecimal(p.price, 0, 'COMMA', 0, 'POINT')} + '₫'">250.000₫</div>
                             <div class="mt-auto pt-2">
-                                <button onclick="window.location.href='product-detail.html'" class="btn btn-outline-success rounded-pill btn-sm px-3 w-100">Xem Chi Tiết</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-4 col-sm-6" data-aos="fade-up" data-aos-delay="200">
-                    <div class="product-card">
-                        <a href="../../../../../../../../../Users/LE%20QUOC%20TOAN/Downloads/product-detail.html" class="product-img-wrap">
-                            <img src="https://images.unsplash.com/photo-1615485500704-8e99099928b3?w=600" class="img-default">
-                            <img src="https://images.unsplash.com/photo-1594313012903-855f4a7c0412?w=600" class="img-hover">
-                        </a>
-                        <div class="p-3 text-center d-flex flex-column flex-grow-1">
-                            <div class="text-muted small text-uppercase">Nhật Bản</div>
-                            <h5 class="fw-bold my-1"><a href="../../../../../../../../../Users/LE%20QUOC%20TOAN/Downloads/product-detail.html" class="text-decoration-none text-dark">Dưa Lưới Taki</a></h5>
-                            <div class="product-price">550.000₫</div>
-                            <div class="mt-auto pt-2">
-                                <button onclick="window.location.href='product-detail.html'" class="btn btn-outline-success rounded-pill btn-sm px-3 w-100">Xem Chi Tiết</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-4 col-sm-6" data-aos="fade-up">
-                    <div class="product-card">
-                        <a href="../../../../../../../../../Users/LE%20QUOC%20TOAN/Downloads/product-detail.html" class="product-img-wrap">
-                            <img src="https://images.unsplash.com/photo-1582979512210-99b6a53385f9?w=600" class="img-default">
-                            <img src="https://images.unsplash.com/photo-1528821128474-27f963b062bf?w=600" class="img-hover">
-                            <div class="position-absolute top-0 start-0 m-2 badge bg-success">NEW</div>
-                        </a>
-                        <div class="p-3 text-center d-flex flex-column flex-grow-1">
-                            <div class="text-muted small text-uppercase">Úc</div>
-                            <h5 class="fw-bold my-1"><a href="../../../../../../../../../Users/LE%20QUOC%20TOAN/Downloads/product-detail.html" class="text-decoration-none text-dark">Cherry Đỏ</a></h5>
-                            <div class="product-price">450.000₫</div>
-                            <div class="mt-auto pt-2">
-                                <button onclick="window.location.href='product-detail.html'" class="btn btn-outline-success rounded-pill btn-sm px-3 w-100">Xem Chi Tiết</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-4 col-sm-6" data-aos="fade-up" data-aos-delay="100">
-                    <div class="product-card">
-                        <a href="../../../../../../../../../Users/LE%20QUOC%20TOAN/Downloads/product-detail.html" class="product-img-wrap">
-                            <img src="https://images.unsplash.com/photo-1601004890684-d8cbf643f5f2?w=600" class="img-default">
-                            <img src="https://images.unsplash.com/photo-1550989460-0adf9ea622e2?w=600" class="img-hover">
-                        </a>
-                        <div class="p-3 text-center d-flex flex-column flex-grow-1">
-                            <div class="text-muted small text-uppercase">Việt Nam</div>
-                            <h5 class="fw-bold my-1"><a href="../../../../../../../../../Users/LE%20QUOC%20TOAN/Downloads/product-detail.html" class="text-decoration-none text-dark">Bơ Sáp 034</a></h5>
-                            <div class="product-price">60.000₫</div>
-                            <div class="mt-auto pt-2">
-                                <button onclick="window.location.href='product-detail.html'" class="btn btn-outline-success rounded-pill btn-sm px-3 w-100">Xem Chi Tiết</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-4 col-sm-6" data-aos="fade-up" data-aos-delay="200">
-                    <div class="product-card">
-                        <a href="../../../../../../../../../Users/LE%20QUOC%20TOAN/Downloads/product-detail.html" class="product-img-wrap">
-                            <img src="https://images.unsplash.com/photo-1596591606975-97ee5cef3a1e?w=600" class="img-default">
-                            <img src="https://images.unsplash.com/photo-1596591606975-97ee5cef3a1e?w=600" class="img-hover">
-                            <div class="position-absolute top-0 start-0 m-2 badge bg-warning">HOT</div>
-                        </a>
-                        <div class="p-3 text-center d-flex flex-column flex-grow-1">
-                            <div class="text-muted small text-uppercase">New Zealand</div>
-                            <h5 class="fw-bold my-1"><a href="../../../../../../../../../Users/LE%20QUOC%20TOAN/Downloads/product-detail.html" class="text-decoration-none text-dark">Kiwi Vàng</a></h5>
-                            <div class="product-price">220.000₫</div>
-                            <div class="mt-auto pt-2">
-                                <button onclick="window.location.href='product-detail.html'" class="btn btn-outline-success rounded-pill btn-sm px-3 w-100">Xem Chi Tiết</button>
+                                <button th:onclick="'window.location.href=\'/product/detail/' + ${p.id} + '\''" class="btn btn-outline-success rounded-pill btn-sm px-3 w-100">Xem Chi Tiết</button>
                             </div>
                         </div>
                     </div>
@@ -324,7 +278,7 @@
                 <div class="mt-4">
                     <a href="#" class="social-circle"><i class="fab fa-facebook-f"></i></a>
                     <a href="#" class="social-circle"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="social-circle"><i class="fab fa-youtube"></i></a>
+                    <a href="https://youtu.be/wHpGYrXx64Q?si=mXlWKNd9QhGjRogW" class="social-circle"><i class="fab fa-youtube"></i></a>
                 </div>
             </div>
             <div class="col-lg-2 col-md-6 mb-4">
@@ -393,6 +347,45 @@
             contactPopup.classList.remove("active");
         }
     });
+</script>
+<div id="toast-box" style="position: fixed; top: 20px; right: 20px; z-index: 9999;"></div>
+
+<script>
+
+    function showToast(message, type = 'success') {
+        const toastBox = document.getElementById('toast-box');
+        const toast = document.createElement('div');
+
+
+        toast.style.background = 'white';
+        toast.style.padding = '15px 25px';
+        toast.style.marginTop = '10px';
+        toast.style.borderRadius = '10px';
+        toast.style.boxShadow = '0 5px 15px rgba(0,0,0,0.2)';
+        toast.style.display = 'flex';
+        toast.style.alignItems = 'center';
+        toast.style.minWidth = '300px';
+        toast.style.borderLeft = type === 'success' ? '5px solid #2ecc71' : '5px solid #e74c3c';
+        toast.style.animation = 'slideIn 0.5s ease forwards';
+
+        const icon = type === 'success' ? '<i class="fas fa-check-circle text-success me-2 fs-4"></i>' : '<i class="fas fa-exclamation-circle text-danger me-2 fs-4"></i>';
+
+        toast.innerHTML = `${icon} <div class="fw-bold text-dark">${message}</div>`;
+
+        toastBox.appendChild(toast);
+
+        setTimeout(() => {
+            toast.style.animation = 'slideOut 0.5s ease forwards';
+            setTimeout(() => { toast.remove(); }, 500);
+        }, 3000);
+    }
+
+    const styleSheet = document.createElement("style");
+    styleSheet.innerText = `
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+    `;
+    document.head.appendChild(styleSheet);
 </script>
 </body>
 </html>

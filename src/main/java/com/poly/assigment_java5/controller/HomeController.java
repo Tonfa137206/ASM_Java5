@@ -19,7 +19,7 @@ public class HomeController {
 
     @GetMapping("/")
     public String home(Model model, HttpSession session) {
-        model.addAttribute("products", productDAO.findByAvailableTrue());  // ← sửa lại dòng này
+        model.addAttribute("items", productDAO.findByAvailableTrue());  // ← sửa thành "items"
         model.addAttribute("categories", categoryDAO.findAll());
 
         // Giữ nguyên phần tính cartCount

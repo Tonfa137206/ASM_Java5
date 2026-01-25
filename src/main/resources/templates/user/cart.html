@@ -56,20 +56,20 @@
 <body>
 <nav class="navbar navbar-expand-lg fixed-top">
     <div class="container">
-        <a class="navbar-brand fw-bold text-success fs-3" href="/"><i class="fas fa-leaf me-2"></i>FruitGarden</a>
+        <a class="navbar-brand fw-bold text-success fs-3" th:href="@{/}"><i class="fas fa-leaf me-2"></i>FruitGarden</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
             <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link" href="/">TRANG CHỦ</a></li>
-                <li class="nav-item"><a class="nav-link" href="/products">SẢN PHẨM</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/}">TRANG CHỦ</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/product/list}">SẢN PHẨM</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">BLOG SỨC KHỎE</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">LIÊN HỆ</a></li>
             </ul>
         </div>
         <div class="d-flex align-items-center">
-            <a href="/cart" class="position-relative me-3 text-dark">
+            <a th:href="@{/cart/view}" class="position-relative me-3 text-dark">
                 <i class="fas fa-shopping-cart fs-5"></i>
                 <span th:text="${cartCount}" class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle">0</span>
             </a>
@@ -86,10 +86,10 @@
 
             <!-- Khi chưa đăng nhập -->
             <th:block th:unless="${session.account != null}">
-                <a href="/login" class="text-dark me-3">
+                <a th:href="@{/login}" class="text-dark me-3">
                     <i class="fas fa-sign-in-alt fs-5"></i> Đăng nhập
                 </a>
-                <a href="/register" class="text-success">
+                <a th:href="@{/register}" class="text-success">
                     <i class="fas fa-user-plus fs-5"></i> Đăng ký
                 </a>
             </th:block>

@@ -31,7 +31,8 @@ public class Product {
     private Boolean available = true;
 
 //    private Boolean approved = false;  // Mới: default false, admin duyệt thì true
-
+// Khi sản phẩm vừa được insert vào database, trạng thái approved = fail(trạng thái chờ duyệt), mục đích cho khách hàng không thấy sanr phẩm
+// Khi admin bấm duyệt, trạng thái approved = true, lúc đó món hàng mới hiện lên cho user thấy trên trình duyệt
     @ManyToOne
     @JoinColumn(name = "CategoryID")
     private Category category;

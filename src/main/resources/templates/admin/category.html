@@ -5,329 +5,152 @@
     <title>Quản lý Loại hàng - FruitGarden Admin</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
     <style>
-        :root {
-            --primary-green: #28a745;
-            --dark-green: #1e7e34;
-            --light-green: #d4edda;
-            --accent-green: #40c057;
+        /* --- COPY STYLE TỪ BỘ ADMIN MỚI --- */
+        :root { --primary-green: #28a745; }
+        body { background: #f4f6f9; font-family: 'Roboto', sans-serif; }
+
+        /* Sidebar */
+        .sidebar { width: 260px; background: linear-gradient(180deg, #1b4332 0%, #2d6a4f 100%); min-height: 100vh; position: fixed; color: white; padding: 20px; z-index: 100; }
+        .main-content { margin-left: 260px; padding: 30px; }
+        .nav-link { color: rgba(255,255,255,0.8); padding: 12px 15px; border-radius: 8px; margin-bottom: 5px; text-decoration: none; display: flex; align-items: center; transition: 0.3s; }
+        .nav-link:hover, .nav-link.active { background: rgba(255,255,255,0.2); color: #fff; }
+        .nav-link i { width: 30px; }
+
+        /* STYLE RIÊNG CHO TRANG NÀY */
+        .card-custom {
+            background: white; border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            padding: 25px; border: none; margin-bottom: 30px;
         }
-        
-        body {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            font-family: 'Roboto', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        .header-section {
-            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
-            color: white;
-            padding: 2rem 0;
-            margin-bottom: 2rem;
-            border-radius: 0 0 20px 20px;
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
-        }
-        
-        .brand-logo {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: white;
-            text-decoration: none;
-            font-family: 'Montserrat', sans-serif;
-        }
-        
-        .brand-logo i {
-            color: #90ee90;
-            margin-right: 10px;
-        }
-        
-        .page-title {
-            font-size: 2.2rem;
-            font-weight: 600;
-            margin: 0;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            font-family: 'Montserrat', sans-serif;
-        }
-        
-        .form-card {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-            border: none;
-            overflow: hidden;
-        }
-        
-        .form-card .card-header {
-            background: linear-gradient(135deg, var(--accent-green) 0%, var(--primary-green) 100%);
-            color: white;
-            font-weight: 600;
-            font-size: 1.1rem;
-            padding: 1rem 1.5rem;
-            border: none;
-        }
-        
-        .form-card .card-body {
-            padding: 2rem;
-        }
-        
-        .form-label {
-            font-weight: 600;
-            color: #495057;
-            margin-bottom: 0.5rem;
-        }
-        
-        .form-control {
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
-            padding: 0.75rem 1rem;
-            transition: all 0.3s ease;
-        }
-        
-        .form-control:focus {
-            border-color: var(--primary-green);
-            box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
-        }
-        
-        .btn-custom {
-            border-radius: 25px;
-            padding: 0.6rem 1.5rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: all 0.3s ease;
-            border: none;
-        }
-        
-        .btn-create {
-            background: linear-gradient(135deg, var(--accent-green) 0%, var(--primary-green) 100%);
-            color: white;
-        }
-        
-        .btn-create:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
-            color: white;
-        }
-        
-        .btn-update {
-            background: linear-gradient(135deg, #ffc107 0%, #ff8f00 100%);
-            color: white;
-        }
-        
-        .btn-update:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
-            color: white;
-        }
-        
-        .btn-reset {
-            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
-            color: white;
-        }
-        
-        .btn-reset:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4);
-            color: white;
-        }
-        
-        .table-container {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-        
-        .table {
-            margin: 0;
-        }
-        
-        .table thead th {
-            background: linear-gradient(135deg, var(--dark-green) 0%, var(--primary-green) 100%);
-            color: white;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border: none;
-            padding: 1rem;
-        }
-        
-        .table tbody tr {
-            transition: all 0.3s ease;
-        }
-        
-        .table tbody tr:hover {
-            background-color: var(--light-green);
-            transform: scale(1.01);
-        }
-        
-        .table tbody td {
-            padding: 1rem;
-            vertical-align: middle;
-            border-color: #e9ecef;
-        }
-        
-        .btn-action {
-            border-radius: 20px;
-            padding: 0.4rem 1rem;
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin: 0 0.2rem;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-edit {
-            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
-            border: none;
-            color: white;
-        }
-        
-        .btn-edit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(23, 162, 184, 0.4);
-            color: white;
-        }
-        
-        .btn-delete {
-            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-            border: none;
-            color: white;
-        }
-        
-        .btn-delete:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
-            color: white;
-        }
-        
-        .stats-card {
-            background: white;
-            border-radius: 15px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-        
-        .stats-number {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: var(--primary-green);
-        }
-        
-        .stats-label {
-            color: #6c757d;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+
+        /* Form nhập liệu đẹp hơn */
+        .form-control-lg { border-radius: 10px; font-size: 1rem; border: 1px solid #dee2e6; }
+        .form-control-lg:focus { box-shadow: 0 0 0 4px rgba(40, 167, 69, 0.1); border-color: var(--primary-green); }
+
+        /* Table đẹp hơn */
+        .table thead th { background-color: #f8f9fa; color: #495057; border-bottom: 2px solid #e9ecef; font-weight: 600; text-transform: uppercase; font-size: 0.85rem; padding: 15px; }
+        .table tbody td { vertical-align: middle; padding: 15px; border-bottom: 1px solid #f2f2f2; color: #555; }
+
+        /* Nút thao tác nhỏ gọn */
+        .btn-action { width: 35px; height: 35px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; transition: 0.2s; border: none; }
+        .btn-edit { background: rgba(13, 110, 253, 0.1); color: #0d6efd; } .btn-edit:hover { background: #0d6efd; color: white; }
+        .btn-delete { background: rgba(220, 53, 69, 0.1); color: #dc3545; } .btn-delete:hover { background: #dc3545; color: white; }
+        .btn-reset { background: rgba(108, 117, 125, 0.1); color: #6c757d; } .btn-reset:hover { background: #6c757d; color: white; }
+
+        .alert-custom { border-radius: 10px; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
     </style>
 </head>
 <body>
 
-<!-- Header Section -->
-<div class="header-section">
-    <div class="container">
-        <div class="d-flex justify-content-between align-items-center">
-            <a href="#" class="brand-logo">
-                <i class="fas fa-seedling"></i>FruitGarden Admin
-            </a>
-            <h1 class="page-title">
-                <i class="fas me-3"></i>Quản Lý Loại Hàng
-            </h1>
-        </div>
+<div class="sidebar">
+    <div class="d-flex align-items-center mb-5 px-2">
+        <i class="fas fa-leaf fa-2x me-3 text-warning"></i>
+        <div><h4 class="mb-0 fw-bold" style="font-family: 'Montserrat'">FruitGarden</h4><small class="opacity-75">Admin Panel</small></div>
     </div>
+    <nav class="nav flex-column">
+        <a href="/admin/dashboard" class="nav-link"><i class="fas fa-chart-line"></i> Dashboard</a>
+        <a href="/admin/category/index" class="nav-link active"><i class="fas fa-layer-group"></i> Loại hàng</a>
+        <a href="/admin/product/index" class="nav-link"><i class="fas fa-box-open"></i> Sản phẩm</a>
+        <a href="/admin/order/index" class="nav-link"><i class="fas fa-shopping-cart"></i> Đơn hàng</a>
+        <a href="/admin/account/index" class="nav-link"><i class="fas fa-users"></i> Khách hàng</a>
+        <a href="/auth/logout" class="nav-link mt-5 text-warning"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+    </nav>
 </div>
 
-<div class="container">
-    <!-- Stats Section -->
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <div class="stats-card">
-                <div class="stats-number" th:text="${#lists.size(items)}">0</div>
-                <div class="stats-label">Tổng số loại hàng</div>
-            </div>
-        </div>
+<div class="main-content">
+
+    <div th:if="${message != null}" class="alert alert-success alert-custom d-flex align-items-center mb-4" role="alert">
+        <i class="fas fa-check-circle fs-4 me-3 text-success"></i>
+        <div><strong th:text="${message}"></strong></div>
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
     </div>
 
     <div class="row">
-        <!-- Form Section -->
-        <div class="col-lg-5 mb-4">
-            <div class="card form-card">
-                <div class="card-header">
-                    <i class="fas fa-edit me-2"></i>Thông Tin Loại Hàng
-                </div>
-                <div class="card-body">
-                    <form th:object="${item}" method="post">
-                        <div class="mb-4">
-                            <label class="form-label">
-                                <i class="fas fa-hashtag me-2"></i>Mã loại:
-                            </label>
-                            <input th:field="*{id}" class="form-control" readonly placeholder="Tự động tạo ID">
-                        </div>
-                        
-                        <div class="mb-4">
-                            <label class="form-label">
-                                <i class="fas fa-tag me-2"></i>Tên loại:
-                            </label>
-                            <input th:field="*{name}" class="form-control" required placeholder="Nhập tên loại hàng...">
-                        </div>
+        <div class="col-md-4">
+            <div class="card-custom h-100">
+                <h5 class="fw-bold text-dark mb-4 border-bottom pb-2">
+                    <i class="fas fa-edit me-2 text-success"></i>Thông tin Loại hàng
+                </h5>
 
-                        <div class="d-grid gap-2">
-                            <button formaction="/admin/category/create" class="btn btn-custom btn-create">
-                                <i class="fas fa-plus me-2"></i>Tạo Mới
-                            </button>
-                            <button formaction="/admin/category/update" class="btn btn-custom btn-update">
-                                <i class="fas fa-sync-alt me-2"></i>Cập Nhật
-                            </button>
-                            <a href="/admin/category/index" class="btn btn-custom btn-reset">
-                                <i class="fas fa-redo me-2"></i>Làm Mới
-                            </a>
-                        </div>
-                    </form>
-                </div>
+                <form th:action="@{/admin/category/create}" th:object="${item}" method="post">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-muted small">Tên loại hàng</label>
+                        <input th:field="*{name}" type="text" class="form-control form-control-lg" placeholder="Ví dụ: Trái cây nhập khẩu..." required>
+                    </div>
+
+                    <input th:field="*{id}" type="hidden">
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button class="btn btn-success py-2 fw-bold shadow-sm">
+                            <i class="fas fa-save me-2"></i>Lưu Lại
+                        </button>
+                        <a th:href="@{/admin/category}" class="btn btn-light text-secondary py-2 fw-bold">
+                            <i class="fas fa-sync-alt me-2"></i>Làm mới
+                        </a>
+                    </div>
+                </form>
             </div>
         </div>
 
-        <!-- Table Section -->
-        <div class="col-lg-7">
-            <div class="table-container">
-                <table class="table table-hover">
-                    <thead>
+        <div class="col-md-8">
+            <div class="card-custom h-100">
+                <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+                    <h5 class="fw-bold text-dark mb-0"><i class="fas fa-list me-2 text-success"></i>Danh sách</h5>
+                    <div class="input-group w-50">
+                        <input type="text" class="form-control form-control-sm" placeholder="Tìm nhanh...">
+                        <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-search"></i></button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
                         <tr>
-                            <th><i class="fas fa-hashtag me-2"></i>Mã Loại</th>
-                            <th><i class="fas fa-tag me-2"></i>Tên Loại</th>
-                            <th><i class="fas me-2"></i>Hành Động</th>
+                            <th width="10%">ID</th>
+                            <th>Tên Loại Hàng</th>
+                            <th width="20%" class="text-center">Thao tác</th>
                         </tr>
-                    </thead>
-                    <tbody>
+                        </thead>
+                        <tbody>
                         <tr th:each="c : ${items}">
                             <td>
-                                <span class="badge bg-success fs-6" th:text="${c.id}"></span>
+                                <span class="badge bg-light text-dark border fw-bold" th:text="${c.id}">ID</span>
                             </td>
                             <td>
-                                <strong th:text="${c.name}"></strong>
+                                <span class="fw-bold text-success" th:text="${c.name}">Name</span>
                             </td>
-                            <td>
-                                <a th:href="@{|/admin/category/edit/${c.id}|}" class="btn btn-action btn-edit">
-                                    <i class="fas fa-edit me-1"></i>Sửa
+                            <td class="text-center">
+                                <a th:href="@{|/admin/category/edit/${c.id}|}" class="btn-action btn-edit me-1" title="Sửa">
+                                    <i class="fas fa-pencil-alt"></i>
                                 </a>
-                                <a th:href="@{|/admin/category/delete/${c.id}|}" class="btn btn-action btn-delete"
-                                   onclick="return confirm('Bạn có chắc chắn muốn xóa loại hàng này không?')">
-                                    <i class="fas fa-trash me-1"></i>Xóa
+                                <a th:href="@{|/admin/category/delete/${c.id}|}" class="btn-action btn-delete"
+                                   onclick="return confirm('Bạn có chắc chắn muốn xóa không?')" title="Xóa">
+                                    <i class="fas fa-trash-alt"></i>
                                 </a>
                             </td>
                         </tr>
+
                         <tr th:if="${#lists.isEmpty(items)}">
-                            <td colspan="3" class="text-center text-muted py-4">
-                                <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
-                                Chưa có loại hàng nào được tạo
+                            <td colspan="3" class="text-center py-5 text-muted">
+                                <i class="fas fa-box-open fa-3x mb-3 opacity-25"></i>
+                                <p>Chưa có dữ liệu loại hàng</p>
                             </td>
                         </tr>
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
+
+                <nav class="mt-3">
+                    <ul class="pagination justify-content-end mb-0 pagination-sm">
+                        <li class="page-item disabled"><a class="page-link" href="#">Trước</a></li>
+                        <li class="page-item active"><a class="page-link bg-success border-success" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link text-success" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link text-success" href="#">Sau</a></li>
+                    </ul>
+                </nav>
             </div>
         </div>
     </div>

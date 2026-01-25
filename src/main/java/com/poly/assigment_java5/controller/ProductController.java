@@ -1,130 +1,135 @@
 package com.poly.assigment_java5.controller;
 
-import com.poly.assigment_java5.dao.*;
-import com.poly.assigment_java5.entity.Account;
+import com.poly.assigment_java5.dao.CategoryDAO;
+import com.poly.assigment_java5.dao.ProductDAO;
+import com.poly.assigment_java5.entity.Category;
 import com.poly.assigment_java5.entity.Product;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Date;
-import java.util.UUID;
+import java.util.List;
 
 @Controller
-@RequestMapping("/products")
 public class ProductController {
 
-    @Autowired private ProductDAO productDAO;
-    @Autowired private CategoryDAO categoryDAO;
+    @Autowired
+    ProductDAO productDAO;
 
-    private static final String UPLOAD_DIR = "src/main/resources/static/images/products/";
+    @Autowired
+    CategoryDAO categoryDAO;
 
-    // Danh sách sản phẩm (cho mọi người)
-    @GetMapping
+    // Alternative home page mapping
+    @RequestMapping("/home")
+    public String homeAlternative(Model model) {
+        return "redirect:/";
+    }
+
+    // Product List Page - All available products
+    @RequestMapping("/product/list")
     public String list(Model model) {
-        model.addAttribute("products", productDAO.findByAvailableTrue());  // ← sửa lại dùng findByAvailableTrue()
+        List<Product> products = productDAO.findByAvailableTrue();
+        model.addAttribute("items", products);
+        model.addAttribute("pageTitle", "Tất cả sản phẩm");
         return "user/product";
     }
 
-    // Chi tiết sản phẩm
-    @GetMapping("/{id}")
-    public String detail(@PathVariable Integer id, Model model) {
-        Product product = productDAO.findById(id).orElse(null);
-        if (product == null) {
-            return "redirect:/products";
+    // Product Detail Page
+    @RequestMapping("/product/detail/{id}")
+    public String detail(Model model, @PathVariable("id") Integer id) {
+        Product item = productDAO.findById(id).orElse(null);
+        if (item == null) {
+            // Redirect to product list if product not found
+            return "redirect:/product/list";
         }
-        model.addAttribute("product", product);
+        model.addAttribute("item", item);
+        
+        // Add related products from same category
+        if (item.getCategory() != null) {
+            List<Product> relatedProducts = productDAO.findByCategoryId(item.getCategory().getId());
+            // Remove current product from related products
+            relatedProducts.removeIf(p -> p.getId().equals(id));
+            model.addAttribute("relatedProducts", relatedProducts);
+        }
+        
         return "user/product-detail";
     }
 
-    // Thêm sản phẩm (bất kỳ user đã login nào cũng thêm được, hiện ngay)
-    @GetMapping("/add")
-    public String showAddForm(Model model, HttpSession session, RedirectAttributes ra) {
-        Account account = (Account) session.getAttribute("account");
-        if (account == null) {
-            ra.addFlashAttribute("error", "Vui lòng đăng nhập!");
-            return "redirect:/login";
+    // Product List by Category - Filter by category
+    @RequestMapping("/product/list-by-category/{cid}")
+    public String listByCategory(Model model, @PathVariable("cid") Integer cid) {
+        List<Product> products = productDAO.findByCategoryId(cid);
+        model.addAttribute("items", products);
+        
+        // Add category info for page title
+        Category category = categoryDAO.findById(cid).orElse(null);
+        if (category != null) {
+            model.addAttribute("pageTitle", "Danh mục: " + category.getName());
+            model.addAttribute("currentCategory", category);
+        } else {
+            model.addAttribute("pageTitle", "Danh mục không tồn tại");
         }
-        model.addAttribute("product", new Product());
-        model.addAttribute("categories", categoryDAO.findAll());
-        return "user/product/add";  // templates/user/product/add.html (form thêm)
+        
+        return "user/product";
     }
 
-    @PostMapping("/add")
-    public String add(@ModelAttribute Product product,
-                      @RequestParam("imageFile") MultipartFile file,
-                      HttpSession session, RedirectAttributes ra) throws IOException {
-        Account account = (Account) session.getAttribute("account");
-        if (account == null) {
-            ra.addFlashAttribute("error", "Vui lòng đăng nhập!");
-            return "redirect:/login";
+    // Search products (optional enhancement)
+    @RequestMapping("/product/search")
+    public String search(Model model, String keyword) {
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            // This would require a search method in ProductDAO
+            // For now, return all products
+            List<Product> products = productDAO.findByAvailableTrue();
+            model.addAttribute("items", products);
+            model.addAttribute("pageTitle", "Kết quả tìm kiếm: " + keyword);
+            model.addAttribute("searchKeyword", keyword);
+        } else {
+            return "redirect:/product/list";
         }
-
-        if (!file.isEmpty()) {
-            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            Files.write(Paths.get(UPLOAD_DIR + fileName), file.getBytes());
-            product.setImage("/images/products/" + fileName);
-        }
-        product.setCreateDate(new Date());
-        product.setAvailable(true);  // Mặc định có sẵn
-        productDAO.save(product);
-        ra.addFlashAttribute("success", "Thêm sản phẩm thành công!");
-        return "redirect:/products";
+        return "user/product";
     }
 
-    // Sửa sản phẩm (chỉ admin)
-    @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable Integer id, Model model, HttpSession session, RedirectAttributes ra) {
-        Account account = (Account) session.getAttribute("account");
-        if (account == null || !account.getRole()) {
-            ra.addFlashAttribute("error", "Chỉ admin mới có quyền!");
-            return "redirect:/products";
+    // Test endpoint to verify data loading
+    @RequestMapping("/test/data")
+    public String testData(Model model) {
+        List<Product> products = productDAO.findAll();
+        List<Product> availableProducts = productDAO.findByAvailableTrue();
+        List<Category> categories = categoryDAO.findAll();
+        
+        model.addAttribute("productCount", products.size());
+        model.addAttribute("availableProductCount", availableProducts.size());
+        model.addAttribute("categoryCount", categories.size());
+        model.addAttribute("products", products);
+        model.addAttribute("availableProducts", availableProducts);
+        model.addAttribute("categories", categories);
+        
+        // Debug logging for test endpoint
+        System.out.println("=== DEBUG TEST DATA ===");
+        System.out.println("Total products: " + products.size());
+        System.out.println("Available products: " + availableProducts.size());
+        System.out.println("Categories: " + categories.size());
+        
+        if (!products.isEmpty()) {
+            System.out.println("First product: " + products.get(0).getName() + " - Available: " + products.get(0).getAvailable());
         }
-        Product product = productDAO.findById(id).orElse(null);
-        if (product == null) {
-            return "redirect:/products";
-        }
-        model.addAttribute("product", product);
-        model.addAttribute("categories", categoryDAO.findAll());
-        return "admin/product/edit";  // templates/admin/product/edit.html
+        
+        return "test-data"; // This will show a simple test page
     }
 
-    @PostMapping("/update")
-    public String update(@ModelAttribute Product product,
-                         @RequestParam(value = "imageFile", required = false) MultipartFile file,
-                         HttpSession session, RedirectAttributes ra) throws IOException {
-        Account account = (Account) session.getAttribute("account");
-        if (account == null || !account.getRole()) {
-            ra.addFlashAttribute("error", "Chỉ admin mới có quyền!");
-            return "redirect:/products";
-        }
-        if (file != null && !file.isEmpty()) {
-            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            Files.write(Paths.get(UPLOAD_DIR + fileName), file.getBytes());
-            product.setImage("/images/products/" + fileName);
-        }
-        productDAO.save(product);
-        ra.addFlashAttribute("success", "Cập nhật thành công!");
-        return "redirect:/products";
+    // Global Model Attribute - Categories for sidebar (available in ALL views)
+    @ModelAttribute("cates")
+    public List<Category> getCategories() {
+        return categoryDAO.findAll();
     }
 
-    // Xóa sản phẩm (chỉ admin)
-    @GetMapping("/delete/{id}")
-    public String delete(@PathVariable Integer id, HttpSession session, RedirectAttributes ra) {
-        Account account = (Account) session.getAttribute("account");
-        if (account == null || !account.getRole()) {
-            ra.addFlashAttribute("error", "Chỉ admin mới có quyền!");
-            return "redirect:/products";
-        }
-        productDAO.deleteById(id);
-        ra.addFlashAttribute("success", "Xóa thành công!");
-        return "redirect:/products";
+    // Global Model Attribute - Cart count (optional)
+    @ModelAttribute("cartCount")
+    public Integer getCartCount() {
+        // This would integrate with cart service
+        // For now, return a default value
+        return 0;
     }
 }

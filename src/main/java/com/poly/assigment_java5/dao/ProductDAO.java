@@ -2,12 +2,16 @@ package com.poly.assigment_java5.dao;
 
 import com.poly.assigment_java5.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
+import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
-@Repository
 public interface ProductDAO extends JpaRepository<Product, Integer> {
+
+    // 1. Tìm tất cả sản phẩm đang bán (Available = true)
+    // Spring Data JPA sẽ tự động tạo câu lệnh SQL dựa trên tên hàm
     List<Product> findByAvailableTrue();
-//    List<Product> findByApprovedTrue();  // Mới: cho index show chỉ approved
+
+    // 2. Tìm sản phẩm theo mã loại (Category Id)
+    // Query method chuẩn: tìm theo thuộc tính category.id
+    List<Product> findByCategoryId(Integer cid);
 }
